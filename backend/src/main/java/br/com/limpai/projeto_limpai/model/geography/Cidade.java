@@ -12,4 +12,4 @@ public record Cidade (
         @Column("nome")
         String nome,
         @Column("estado_id")
-        Estado estado) { }
+        Long estadoId) { }

@@ -40,6 +40,7 @@ CREATE TABLE "usuario" (
 CREATE TABLE "voluntario" (
     "usuario_id" BIGINT PRIMARY KEY,
     "nome" VARCHAR(100) NOT NULL,
+    "cpf" VARCHAR(14) NOT NULL,
     "data_nascimento" TIMESTAMP,
     FOREIGN KEY ("usuario_id") REFERENCES "usuario"("usuario_id")
 );

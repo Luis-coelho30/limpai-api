@@ -8,8 +8,9 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.util.Objects;
 
 @Table("patrocinador")
-public class Patrocinador extends Usuario {
+public class Patrocinador {
 
+    @Id
     @Column("usuario_id")
     private Long patrocinadorId;
     @Column("razao_social")
@@ -22,9 +23,7 @@ public class Patrocinador extends Usuario {
     public Patrocinador() {
     }
 
-    public Patrocinador(Long usuario_id, String email, String senha, String telefone, UsuarioEnum tipoUsuario, Long patrocinadorId,
-                        String razaoSocial, String nomeFantasia, String cnpj) {
-        super(usuario_id, email, senha, telefone, tipoUsuario);
+    public Patrocinador(Long patrocinadorId, String razaoSocial, String nomeFantasia, String cnpj) {
         this.patrocinadorId = patrocinadorId;
         this.razaoSocial = razaoSocial;
         this.nomeFantasia = nomeFantasia;

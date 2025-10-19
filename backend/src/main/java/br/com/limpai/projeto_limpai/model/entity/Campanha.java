@@ -28,13 +28,13 @@ public class Campanha {
     @Column("fundos_arrecadados")
     private BigDecimal fundosArrecadados = BigDecimal.ZERO;
     @Column("local_id")
-    private Local local;
+    private Long localId;
 
     public Campanha() {
     }
 
     public Campanha(Long campanhaId, String nome, String descricao, LocalDateTime dataInicio, LocalDateTime dataFim,
-                    BigDecimal metaFundos, BigDecimal fundosArrecadados, Local local) {
+                    BigDecimal metaFundos, BigDecimal fundosArrecadados, Long localId) {
         this.campanhaId = campanhaId;
         this.nome = nome;
         this.descricao = descricao;
@@ -42,7 +42,7 @@ public class Campanha {
         this.dataFim = dataFim;
         this.metaFundos = metaFundos;
         this.fundosArrecadados = fundosArrecadados;
-        this.local = local;
+        this.localId = localId;
     }
 
     public Long getCampanhaId() {
@@ -101,12 +101,12 @@ public class Campanha {
         this.fundosArrecadados = fundosArrecadados;
     }
 
-    public Local getLocal() {
-        return local;
+    public Long getLocalId() {
+        return localId;
     }
 
-    public void setLocal(Local local) {
-        this.local = local;
+    public void setLocalId(Long localId) {
+        this.localId = localId;
     }
 
     @Override

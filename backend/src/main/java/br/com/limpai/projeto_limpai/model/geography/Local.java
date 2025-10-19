@@ -19,17 +19,17 @@ public class Local {
     @Column("cep")
     private String cep;
     @Column("cidade_id")
-    private Cidade cidade;
+    private Long cidadeId;
 
     public Local() {
     }
 
-    public Local(Long localId, String nome, String endereco, String cep, Cidade cidade) {
+    public Local(Long localId, String nome, String endereco, String cep, Long cidadeId) {
         this.localId = localId;
         this.nome = nome;
         this.endereco = endereco;
         this.cep = cep;
-        this.cidade = cidade;
+        this.cidadeId = cidadeId;
     }
 
     public Long getLocalId() {
@@ -64,12 +64,12 @@ public class Local {
         this.cep = cep;
     }
 
-    public Cidade getCidade() {
-        return cidade;
+    public Long getCidadeId() {
+        return cidadeId;
     }
 
-    public void setCidade(Cidade cidade) {
-        this.cidade = cidade;
+    public void setCidadeId(Long cidadeId) {
+        this.cidadeId = cidadeId;
     }
 
     @Override

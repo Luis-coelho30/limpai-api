@@ -9,8 +9,9 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Table("voluntario")
-public class Voluntario extends Usuario {
+public class Voluntario {
 
+    @Id
     @Column("usuario_id")
     private Long voluntarioId;
     @Column("nome")
@@ -23,9 +24,7 @@ public class Voluntario extends Usuario {
     public Voluntario() {
     }
 
-    public Voluntario(Long usuario_id, String email, String senha, String telefone, UsuarioEnum tipoUsuario,
-                      Long voluntarioId, String nome, String cpf, LocalDateTime dataNascimento) {
-        super(usuario_id, email, senha, telefone, tipoUsuario);
+    public Voluntario(Long voluntarioId, String nome, String cpf, LocalDateTime dataNascimento) {
         this.voluntarioId = voluntarioId;
         this.nome = nome;
         this.cpf = cpf;
