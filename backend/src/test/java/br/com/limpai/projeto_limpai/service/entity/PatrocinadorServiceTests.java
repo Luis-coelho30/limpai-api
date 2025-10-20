@@ -1,6 +1,5 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
-import br.com.limpai.projeto_limpai.dto.request.PatrocinadorRequestDTO;
 import br.com.limpai.projeto_limpai.exception.user.CnpjJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.user.UsuarioNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Patrocinador;

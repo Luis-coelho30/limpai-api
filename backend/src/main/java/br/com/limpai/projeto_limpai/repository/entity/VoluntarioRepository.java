@@ -19,4 +19,6 @@ public interface VoluntarioRepository extends CrudRepository<Voluntario, Long> {
                             @Param("nome") String nome,
                             @Param("cpf") String cpf,
                             @Param("dataNascimento") LocalDateTime dataNascimento);
+
+    boolean existsByCpf(String cpf);
 }
