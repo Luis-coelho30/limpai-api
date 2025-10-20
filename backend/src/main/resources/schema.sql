@@ -21,11 +21,16 @@ CREATE TABLE "cidade" (
 CREATE TABLE "local" (
     "local_id" BIGINT AUTO_INCREMENT PRIMARY KEY,
     "nome" VARCHAR(150) NOT NULL,
-    "endereco" VARCHAR(200),
+    "endereco" VARCHAR(200) NOT NULL,
     "cidade_id" BIGINT NOT NULL,
-    "cep" CHAR(8),
-    FOREIGN KEY ("cidade_id") REFERENCES "cidade"("cidade_id")
+    "cep" CHAR(8) NOT NULL,
+    CONSTRAINT fk_local_cidade FOREIGN KEY ("cidade_id") REFERENCES "cidade"("cidade_id"),
+    CONSTRAINT uq_local_endereco_cep UNIQUE ("endereco", "cep")
 );
+
+-- Índice para otimizar consultas por cidade
+CREATE INDEX idx_local_cidade_id ON "local" ("cidade_id");
+
 
 -- Tabela usuario
 CREATE TABLE "usuario" (

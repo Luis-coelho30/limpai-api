@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LocalRepository extends CrudRepository<Local, Long> {
+
+    boolean existsByCepAndEndereco(String cep, String endereco);
 }
