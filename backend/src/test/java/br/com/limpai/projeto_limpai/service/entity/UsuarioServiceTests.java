@@ -27,6 +27,31 @@ public class UsuarioServiceTests {
     private UsuarioService usuarioService;
 
     @Test
+    void deveListarUsuarioPorId() {
+        Usuario usuarioSalvo = new Usuario();
+        usuarioSalvo.setUsuarioId(1L);
+        usuarioSalvo.setEmail("teste@limpai.com");
+        usuarioSalvo.setSenha("123");
+        usuarioSalvo.setTelefone("11 11111-1111");
+        usuarioSalvo.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+
+        Mockito.when(usuarioRepository.findById(1L))
+                .thenReturn(Optional.of(usuarioSalvo));
+
+        Usuario resultado = usuarioService.getUsuarioPorId(1L);
+
+        assertAll(
+                () -> assertEquals(1L, resultado.getUsuarioId()),
+                () -> assertEquals("teste@limpai.com", resultado.getEmail()),
+                () -> assertEquals("123", resultado.getSenha()),
+                () -> assertEquals("11 11111-1111", resultado.getTelefone()),
+                () -> assertEquals(UsuarioEnum.VOLUNTARIO, resultado.getTipoUsuario())
+        );
+
+        Mockito.verify(usuarioRepository).findById(1L);
+    }
+
+    @Test
     void cadastrarUsuarioGeral() {
         Usuario usuarioSalvo = new Usuario();
         usuarioSalvo.setUsuarioId(1L);
@@ -49,9 +74,31 @@ public class UsuarioServiceTests {
         Mockito.when(usuarioRepository.findByEmail("teste@limpai.com"))
                 .thenReturn(Optional.of(new Usuario()));
 
-        assertThrows(EmailJaCadastradoException.class, () ->
-                usuarioService.criarUsuarioBase("teste@limpai.com", "123", "11 11111-1111", UsuarioEnum.VOLUNTARIO)
+        Usuario usuarioExistente = new Usuario();
+        usuarioExistente.setUsuarioId(1L);
+        usuarioExistente.setEmail("outro@limpai.com");
+        usuarioExistente.setSenha("123");
+        usuarioExistente.setTelefone("11 11111-1111");
+        usuarioExistente.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+
+        Mockito.when(usuarioRepository.findById(1L))
+                .thenReturn(Optional.of(usuarioExistente));
+
+        Mockito.when(usuarioRepository.existsByEmail("teste@limpai.com"))
+                .thenReturn(true);
+
+        Assertions.assertAll(
+                () -> assertThrows(EmailJaCadastradoException.class, () ->
+                        usuarioService.criarUsuarioBase("teste@limpai.com", "123", "11 11111-1111", UsuarioEnum.VOLUNTARIO)
+                ),
+                () -> assertThrows(EmailJaCadastradoException.class, () ->
+                        usuarioService.atualizarUsuario(1L, "teste@limpai.com", "123", "11 11111-1111", UsuarioEnum.VOLUNTARIO)
+                )
         );
+
+        Mockito.verify(usuarioRepository).findByEmail("teste@limpai.com");
+        Mockito.verify(usuarioRepository).findById(1L);
+        Mockito.verify(usuarioRepository).existsByEmail("teste@limpai.com");
     }
 
     @Test
@@ -64,7 +111,7 @@ public class UsuarioServiceTests {
                         usuarioService.atualizarUsuario(1L, "teste@limpai.com", "123", "11 11111-1111", UsuarioEnum.VOLUNTARIO)
                 ),
                 () -> assertThrows(UsuarioNaoEncontradoException.class, () ->
-                        usuarioService.apagarUsuario(1L, "teste@limpai.com")
+                        usuarioService.apagarUsuario(1L)
                 )
         );
     }
@@ -108,7 +155,7 @@ public class UsuarioServiceTests {
         Mockito.when(usuarioRepository.findById(1L))
                 .thenReturn(Optional.of(usuarioExistente));
 
-        usuarioService.apagarUsuario(1L, "teste@limpai.com");
+        usuarioService.apagarUsuario(1L);
 
         Mockito.verify(usuarioRepository).findById(1L);
         Mockito.verify(usuarioRepository).delete(usuarioExistente);

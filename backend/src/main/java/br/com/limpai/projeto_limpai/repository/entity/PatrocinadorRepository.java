@@ -17,4 +17,6 @@ public interface PatrocinadorRepository extends CrudRepository<Patrocinador, Lon
                             @Param("razaoSocial") String razaoSocial,
                             @Param("nomeFantasia") String nomeFantasia,
                             @Param("cnpj") String cnpj);
+
+    boolean existsByCnpj(String cnpj);
 }

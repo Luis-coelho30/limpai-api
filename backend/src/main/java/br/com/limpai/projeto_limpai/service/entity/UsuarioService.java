@@ -16,6 +16,10 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    public Usuario getUsuarioPorId(Long usuarioId) {
+        return usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(1L));
+    }
 
     public Usuario criarUsuarioBase(String email, String senha, String telefone, UsuarioEnum tipoUsuario) {
         if (usuarioRepository.findByEmail(email).isPresent()) {
@@ -25,6 +29,7 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setEmail(email);
         usuario.setSenha(senha);
+        usuario.setTelefone(telefone);
         usuario.setTipoUsuario(tipoUsuario);
 
         return usuarioRepository.save(usuario);
@@ -33,18 +38,23 @@ public class UsuarioService {
 
     public Usuario atualizarUsuario(Long usuarioId, String email, String senha, String telefone, UsuarioEnum tipoUsuario) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new UsuarioNaoEncontradoException(email));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(1L));
+
+        if(!usuario.getEmail().equals(email) && usuarioRepository.existsByEmail(email)) {
+            throw new EmailJaCadastradoException(email);
+        }
 
         usuario.setEmail(email);
         usuario.setSenha(senha);
+        usuario.setTelefone(telefone);
         usuario.setTipoUsuario(tipoUsuario);
 
         return usuarioRepository.save(usuario);
     }
 
-    public void apagarUsuario(Long usuarioId, String email) {
+    public void apagarUsuario(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new UsuarioNaoEncontradoException(email));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
 
         usuarioRepository.delete(usuario);
     }
@@ -53,4 +63,6 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Email: " + email));
     }
+
+
 }
