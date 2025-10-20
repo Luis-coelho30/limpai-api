@@ -1,5 +1,6 @@
 package br.com.limpai.projeto_limpai.repository.join;
 
+import br.com.limpai.projeto_limpai.model.join.UsuarioCampanha;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,12 @@ public class UsuarioCampanhaRepositoryTests {
     @Commit
     @Order(1)
     void salvarUsuarioCampanha() {
-        usuarioCampanhaRepository.inscrever(1L, 1L, Timestamp.valueOf(LocalDateTime.now()));
+        UsuarioCampanha inscricao = new UsuarioCampanha();
+        inscricao.setUsuarioId(1L);
+        inscricao.setCampanhaId(1L);
+        inscricao.setDataInscricao(LocalDateTime.MAX);
+
+        usuarioCampanhaRepository.inscrever(inscricao);
 
         assertTrue(usuarioCampanhaRepository.existsByUsuarioAndCampanha(1L, 1L));
     }

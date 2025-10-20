@@ -4,7 +4,9 @@ import br.com.limpai.projeto_limpai.exception.campanha.CampanhaNaoEncontradaExce
 import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Campanha;
 import br.com.limpai.projeto_limpai.repository.entity.CampanhaRepository;
+import br.com.limpai.projeto_limpai.repository.join.UsuarioCampanhaRepository;
 import br.com.limpai.projeto_limpai.service.geography.LocalService;
+import br.com.limpai.projeto_limpai.service.join.InscricaoService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,11 +19,21 @@ import java.util.Objects;
 public class CampanhaService {
 
     private final CampanhaRepository campanhaRepository;
+    private final UsuarioCampanhaRepository inscricaoRepository;
     private final LocalService localService;
 
-    public CampanhaService(CampanhaRepository campanhaRepository, LocalService localService) {
+    public CampanhaService(CampanhaRepository campanhaRepository, UsuarioCampanhaRepository inscricaoRepository, LocalService localService) {
         this.campanhaRepository = campanhaRepository;
+        this.inscricaoRepository = inscricaoRepository;
         this.localService = localService;
+    }
+
+    public boolean verificarCampanhaPorId(Long campanhaId) {
+        return campanhaRepository.existsById(campanhaId);
+    }
+
+    public boolean verificarCampanhaExpirada(Long campanhaId) {
+        return campanhaRepository.isExpired(campanhaId);
     }
 
     public Campanha getCampanhaById(Long campanhaId) {
@@ -77,6 +89,7 @@ public class CampanhaService {
         Campanha local = campanhaRepository.findById(campanhaId)
                 .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaId));
 
+        inscricaoRepository.removerHistoricoDeInscricoesByCampanha(campanhaId);
         campanhaRepository.delete(local);
     }
 }

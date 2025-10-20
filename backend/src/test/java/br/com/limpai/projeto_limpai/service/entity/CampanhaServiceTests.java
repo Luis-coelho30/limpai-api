@@ -4,6 +4,7 @@ import br.com.limpai.projeto_limpai.exception.campanha.CampanhaNaoEncontradaExce
 import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Campanha;
 import br.com.limpai.projeto_limpai.repository.entity.CampanhaRepository;
+import br.com.limpai.projeto_limpai.repository.join.UsuarioCampanhaRepository;
 import br.com.limpai.projeto_limpai.service.geography.LocalService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,10 +28,33 @@ public class CampanhaServiceTests {
     private CampanhaRepository campanhaRepository;
 
     @Mock
+    private UsuarioCampanhaRepository inscricaoRepository;
+
+    @Mock
     private LocalService localService;
 
     @InjectMocks
     private CampanhaService campanhaService;
+
+    @Test
+    public void deveRetornarTrueSeCampanhaExpirou() {
+        Mockito.when(campanhaRepository.isExpired(1L))
+                .thenReturn(true);
+
+        assertTrue(campanhaService.verificarCampanhaExpirada(1L));
+
+        Mockito.verify(campanhaRepository).isExpired(1L);
+    }
+
+    @Test
+    public void deveRetornarTrueSeCampanhaExistir() {
+        Mockito.when(campanhaRepository.existsById(1L))
+                .thenReturn(true);
+
+        assertTrue(campanhaService.verificarCampanhaPorId(1L));
+
+        Mockito.verify(campanhaRepository).existsById(1L);
+    }
 
     @Test
     public void deveListarCampanhas() {
@@ -180,9 +204,14 @@ public class CampanhaServiceTests {
         Mockito.when(campanhaRepository.findById(1L))
                 .thenReturn(Optional.of(campanhaExistente));
 
+        Mockito.doNothing()
+                .when(inscricaoRepository)
+                .removerHistoricoDeInscricoesByCampanha(1L);
+
         campanhaService.apagarCampanha(1L);
 
         Mockito.verify(campanhaRepository).findById(1L);
+        Mockito.verify(inscricaoRepository).removerHistoricoDeInscricoesByCampanha(1L);
         Mockito.verify(campanhaRepository).delete(campanhaExistente);
     }
 

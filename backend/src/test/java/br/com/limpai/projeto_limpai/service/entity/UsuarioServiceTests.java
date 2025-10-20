@@ -27,6 +27,16 @@ public class UsuarioServiceTests {
     private UsuarioService usuarioService;
 
     @Test
+    void deveRetornarTrueSeUsuarioExiste() {
+        Mockito.when(usuarioRepository.existsById(1L))
+                .thenReturn(true);
+
+        assertTrue(usuarioService.verificarUsuarioPorId(1L));
+
+        Mockito.verify(usuarioRepository).existsById(1L);
+    }
+
+    @Test
     void deveListarUsuarioPorId() {
         Usuario usuarioSalvo = new Usuario();
         usuarioSalvo.setUsuarioId(1L);

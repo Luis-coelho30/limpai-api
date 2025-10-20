@@ -16,6 +16,10 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    public boolean verificarUsuarioPorId(Long usuarioId) {
+        return usuarioRepository.existsById(usuarioId);
+    }
+
     public Usuario getUsuarioPorId(Long usuarioId) {
         return usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(1L));
