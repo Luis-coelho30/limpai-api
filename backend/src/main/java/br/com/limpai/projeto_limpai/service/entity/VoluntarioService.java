@@ -61,7 +61,7 @@ public class VoluntarioService {
             throw new CpfJaCadastradoException(cpf);
         }
 
-        Usuario usuarioAtualizado = usuarioService.atualizarUsuario(
+        usuarioService.atualizarUsuario(
                 voluntarioId,
                 email,
                 senha,

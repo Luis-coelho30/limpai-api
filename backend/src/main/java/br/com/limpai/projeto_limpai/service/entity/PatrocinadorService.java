@@ -60,7 +60,7 @@ public class PatrocinadorService {
             throw new CnpjJaCadastradoException(cnpj);
         }
 
-        Usuario usuarioAtualizado = usuarioService.atualizarUsuario(
+        usuarioService.atualizarUsuario(
                 patrocinadorId,
                 email,
                 senha,

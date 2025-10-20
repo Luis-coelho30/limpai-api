@@ -1,7 +1,6 @@
 package br.com.limpai.projeto_limpai.repository.geography;
 
 import br.com.limpai.projeto_limpai.model.geography.Cidade;
-import br.com.limpai.projeto_limpai.model.geography.Estado;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;

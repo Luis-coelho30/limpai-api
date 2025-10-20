@@ -31,6 +31,10 @@ public class LocalService {
                 .orElseThrow(() -> new LocalNaoEncontradoException(localId));
     }
 
+    public boolean verificarLocalById(Long localId) {
+        return localRepository.existsById(localId);
+    }
+
     public Local criarLocal(String nome, String endereco, String cep, Long cidadeId) {
         if(localRepository.existsByCepAndEndereco(cep, endereco)) {
             throw new LocalJaCadastradoException(endereco, cep);
@@ -47,7 +51,7 @@ public class LocalService {
 
     public Local atualizarLocal(Long localId, String nome, String endereco, String cep, Long cidadeId) {
         Local local = localRepository.findById(localId)
-                .orElseThrow(() -> new LocalNaoEncontradoException(1L));
+                .orElseThrow(() -> new LocalNaoEncontradoException(localId));
 
         if(verificarNovoCepOuEndereco(cep, endereco, local.getCep(), local.getEndereco())) {
             if(localRepository.existsByCepAndEndereco(cep, endereco)) {
@@ -73,4 +77,6 @@ public class LocalService {
     private boolean verificarNovoCepOuEndereco(String cepNovo, String enderecoNovo, String cepAntigo, String enderecoAntigo) {
         return cepNovo.equals(cepAntigo) || enderecoNovo.equals(enderecoAntigo);
     }
+
+
 }

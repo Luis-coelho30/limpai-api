@@ -90,6 +90,16 @@ public class LocalServiceTests {
     }
 
     @Test
+    public void deveRetornarTrueSeLocalExistir() {
+        Mockito.when(localRepository.existsById(1L))
+                .thenReturn(true);
+
+        assertTrue(localService.verificarLocalById(1L));
+
+        Mockito.verify(localRepository).existsById(1L);
+    }
+
+    @Test
     public void deveCadastrarLocal() {
         Local localSalvo = new Local();
         localSalvo.setLocalId(1L);
