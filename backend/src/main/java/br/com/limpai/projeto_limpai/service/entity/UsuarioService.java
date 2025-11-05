@@ -3,7 +3,9 @@ package br.com.limpai.projeto_limpai.service.entity;
 import br.com.limpai.projeto_limpai.exception.user.EmailJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.user.UsuarioNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Usuario;
+import br.com.limpai.projeto_limpai.repository.entity.PatrocinadorRepository;
 import br.com.limpai.projeto_limpai.repository.entity.UsuarioRepository;
+import br.com.limpai.projeto_limpai.repository.entity.VoluntarioRepository;
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +13,13 @@ import org.springframework.stereotype.Service;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PatrocinadorRepository patrocinadorRepository;
+    private final VoluntarioRepository voluntarioRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PatrocinadorRepository patrocinadorRepository, VoluntarioRepository voluntarioRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.patrocinadorRepository = patrocinadorRepository;
+        this.voluntarioRepository = voluntarioRepository;
     }
 
     public boolean verificarUsuarioPorId(Long usuarioId) {
@@ -59,6 +65,12 @@ public class UsuarioService {
     public void apagarUsuario(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
+
+        if(usuario.getTipoUsuario() == UsuarioEnum.PATROCINADOR) {
+            patrocinadorRepository.deleteById(usuarioId);
+        } else {
+            voluntarioRepository.deleteById(usuarioId);
+        }
 
         usuarioRepository.delete(usuario);
     }
