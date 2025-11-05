@@ -7,6 +7,7 @@ import br.com.limpai.projeto_limpai.model.entity.Usuario;
 import br.com.limpai.projeto_limpai.repository.entity.PatrocinadorRepository;
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class PatrocinadorService {
         this.usuarioService = usuarioService;
     }
 
+    @Transactional(readOnly = true)
     public List<Patrocinador> listarPatrocinadores() {
         Iterable<Patrocinador> iterable = patrocinadorRepository.findAll();
         List<Patrocinador> lista = new ArrayList<>();
@@ -31,11 +33,13 @@ public class PatrocinadorService {
         return lista;
     }
 
+    @Transactional(readOnly = true)
     public Patrocinador getPatrocinadorById(Long patrocinadorId) {
         return patrocinadorRepository.findById(patrocinadorId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(patrocinadorId));
     }
 
+    @Transactional
     public Patrocinador cadastrarPatrocinador(String razaoSocial, String nomeFantasia, String cnpj, String email, String senha, String telefone) {
         if(patrocinadorRepository.existsByCnpj(cnpj)) {
             throw new CnpjJaCadastradoException(cnpj);
@@ -53,6 +57,7 @@ public class PatrocinadorService {
         );
     }
 
+    @Transactional
     public Patrocinador atualizarPatrocinador(Long patrocinadorId, String razaoSocial, String nomeFantasia, String cnpj, String email, String senha, String telefone) {
         Patrocinador patrocinador = getPatrocinadorById(patrocinadorId);
 
@@ -75,6 +80,7 @@ public class PatrocinadorService {
         return patrocinadorRepository.save(patrocinador);
     }
 
+    @Transactional
     public void apagarPatrocinador(Long patrocinadorId) {
         Optional<Patrocinador> patrocinadorOpt = patrocinadorRepository.findById(patrocinadorId);
 
@@ -83,6 +89,6 @@ public class PatrocinadorService {
         }
 
         patrocinadorRepository.delete(patrocinadorOpt.get());
-        usuarioService.apagarUsuario(1L);
+        usuarioService.apagarUsuario(patrocinadorId);
     }
 }

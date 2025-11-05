@@ -8,6 +8,7 @@ import br.com.limpai.projeto_limpai.repository.join.UsuarioCampanhaRepository;
 import br.com.limpai.projeto_limpai.service.geography.LocalService;
 import br.com.limpai.projeto_limpai.service.join.InscricaoService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,19 +29,23 @@ public class CampanhaService {
         this.localService = localService;
     }
 
+    @Transactional(readOnly = true)
     public boolean verificarCampanhaPorId(Long campanhaId) {
         return campanhaRepository.existsById(campanhaId);
     }
 
+    @Transactional(readOnly = true)
     public boolean verificarCampanhaExpirada(Long campanhaId) {
         return campanhaRepository.isExpired(campanhaId);
     }
 
+    @Transactional(readOnly = true)
     public Campanha getCampanhaById(Long campanhaId) {
         return campanhaRepository.findById(campanhaId)
                 .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaId));
     }
 
+    @Transactional(readOnly = true)
     public List<Campanha> listarCampanhas() {
         Iterable<Campanha> iterable = campanhaRepository.findAll();
         List<Campanha> lista = new ArrayList<>();
@@ -49,6 +54,7 @@ public class CampanhaService {
         return lista;
     }
 
+    @Transactional
     public Campanha criarCampanha(String nome, String descricao, BigDecimal metaFundos, LocalDateTime dataInicio, LocalDateTime dataFim, Long localId) {
         if(!localService.verificarLocalById(localId)) {
             throw new LocalNaoEncontradoException(localId);
@@ -65,6 +71,7 @@ public class CampanhaService {
         return campanhaRepository.save(campanhaSalva);
     }
 
+    @Transactional
     public Campanha atualizarCampanha(Long campanhaId, String nome, String descricao, BigDecimal metaFundos, LocalDateTime dataInicio, LocalDateTime dataFim, Long localId) {
         Campanha campanha = campanhaRepository.findById(campanhaId)
                 .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaId));
@@ -85,6 +92,7 @@ public class CampanhaService {
         return campanhaRepository.save(campanha);
     }
 
+    @Transactional
     public void apagarCampanha(Long campanhaId) {
         Campanha local = campanhaRepository.findById(campanhaId)
                 .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaId));

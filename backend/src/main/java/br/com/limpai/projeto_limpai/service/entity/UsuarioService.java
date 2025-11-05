@@ -3,34 +3,32 @@ package br.com.limpai.projeto_limpai.service.entity;
 import br.com.limpai.projeto_limpai.exception.user.EmailJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.user.UsuarioNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Usuario;
-import br.com.limpai.projeto_limpai.repository.entity.PatrocinadorRepository;
 import br.com.limpai.projeto_limpai.repository.entity.UsuarioRepository;
-import br.com.limpai.projeto_limpai.repository.entity.VoluntarioRepository;
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final PatrocinadorRepository patrocinadorRepository;
-    private final VoluntarioRepository voluntarioRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PatrocinadorRepository patrocinadorRepository, VoluntarioRepository voluntarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.patrocinadorRepository = patrocinadorRepository;
-        this.voluntarioRepository = voluntarioRepository;
     }
 
+    @Transactional(readOnly = true)
     public boolean verificarUsuarioPorId(Long usuarioId) {
         return usuarioRepository.existsById(usuarioId);
     }
 
+    @Transactional(readOnly = true)
     public Usuario getUsuarioPorId(Long usuarioId) {
         return usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new UsuarioNaoEncontradoException(1L));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
     }
 
+    @Transactional
     public Usuario criarUsuarioBase(String email, String senha, String telefone, UsuarioEnum tipoUsuario) {
         if (usuarioRepository.findByEmail(email).isPresent()) {
             throw new EmailJaCadastradoException(email);
@@ -45,12 +43,13 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-
+    @Transactional
     public Usuario atualizarUsuario(Long usuarioId, String email, String senha, String telefone, UsuarioEnum tipoUsuario) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new UsuarioNaoEncontradoException(1L));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
 
-        if(!usuario.getEmail().equals(email) && usuarioRepository.existsByEmail(email)) {
+        boolean emailMudou = !usuario.getEmail().equals(email);
+        if (emailMudou && usuarioRepository.existsByEmail(email)) {
             throw new EmailJaCadastradoException(email);
         }
 
@@ -62,23 +61,18 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    @Transactional
     public void apagarUsuario(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
 
-        if(usuario.getTipoUsuario() == UsuarioEnum.PATROCINADOR) {
-            patrocinadorRepository.deleteById(usuarioId);
-        } else {
-            voluntarioRepository.deleteById(usuarioId);
-        }
-
         usuarioRepository.delete(usuario);
     }
 
+    @Transactional(readOnly = true)
     public Usuario carregarUsuarioPorEmail(String email) {
         return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsuarioNaoEncontradoException("Email: " + email));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(email));
     }
-
 
 }

@@ -5,6 +5,7 @@ import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoExcept
 import br.com.limpai.projeto_limpai.model.geography.Local;
 import br.com.limpai.projeto_limpai.repository.geography.LocalRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class LocalService {
         this.localRepository = localRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<Local> listarLocais() {
         Iterable<Local> iterable = localRepository.findAll();
         List<Local> lista = new ArrayList<>();
@@ -26,15 +28,18 @@ public class LocalService {
         return lista;
     }
 
+    @Transactional(readOnly = true)
     public Local getLocalById(Long localId) {
         return localRepository.findById(localId)
                 .orElseThrow(() -> new LocalNaoEncontradoException(localId));
     }
 
+    @Transactional(readOnly = true)
     public boolean verificarLocalById(Long localId) {
         return localRepository.existsById(localId);
     }
 
+    @Transactional
     public Local criarLocal(String nome, String endereco, String cep, Long cidadeId) {
         if(localRepository.existsByCepAndEndereco(cep, endereco)) {
             throw new LocalJaCadastradoException(endereco, cep);
@@ -49,6 +54,7 @@ public class LocalService {
         return localRepository.save(local);
     }
 
+    @Transactional
     public Local atualizarLocal(Long localId, String nome, String endereco, String cep, Long cidadeId) {
         Local local = localRepository.findById(localId)
                 .orElseThrow(() -> new LocalNaoEncontradoException(localId));
@@ -67,6 +73,7 @@ public class LocalService {
         return localRepository.save(local);
     }
 
+    @Transactional
     public void apagarLocal(Long localId) {
         Local local = localRepository.findById(localId)
                 .orElseThrow(() -> new LocalNaoEncontradoException(localId));
@@ -77,6 +84,4 @@ public class LocalService {
     private boolean verificarNovoCepOuEndereco(String cepNovo, String enderecoNovo, String cepAntigo, String enderecoAntigo) {
         return cepNovo.equals(cepAntigo) || enderecoNovo.equals(enderecoAntigo);
     }
-
-
 }

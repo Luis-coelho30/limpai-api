@@ -10,6 +10,7 @@ import br.com.limpai.projeto_limpai.repository.join.UsuarioCampanhaRepository;
 import br.com.limpai.projeto_limpai.service.entity.CampanhaService;
 import br.com.limpai.projeto_limpai.service.entity.UsuarioService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,14 +28,17 @@ public class InscricaoService {
         this.usuarioService = usuarioService;
     }
 
+    @Transactional(readOnly = true)
     public List<UsuarioCampanha> getAllByUsuario(Long usuarioId) {
         return inscricaoRepository.findAllByUsuario(usuarioId);
     }
 
+    @Transactional(readOnly = true)
     public List<UsuarioCampanha> getAllByCampanha(Long campanhaId) {
         return inscricaoRepository.findAllByCampanha(campanhaId);
     }
 
+    @Transactional
     public void inscrever(Long usuarioId, Long campanhaId) {
         if(!usuarioService.verificarUsuarioPorId(usuarioId)) {
             throw new UsuarioNaoEncontradoException(usuarioId);
@@ -60,6 +64,7 @@ public class InscricaoService {
         inscricaoRepository.inscrever(inscricao);
     }
 
+    @Transactional
     public void desinscrever(Long usuarioId, Long campanhaId) {
         if(!usuarioService.verificarUsuarioPorId(usuarioId)) {
             throw new UsuarioNaoEncontradoException(usuarioId);

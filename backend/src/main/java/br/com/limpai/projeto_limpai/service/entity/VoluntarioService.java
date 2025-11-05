@@ -7,6 +7,7 @@ import br.com.limpai.projeto_limpai.model.entity.Voluntario;
 import br.com.limpai.projeto_limpai.repository.entity.VoluntarioRepository;
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class VoluntarioService {
         this.usuarioService = usuarioService;
     }
 
+    @Transactional(readOnly = true)
     public List<Voluntario> listarVoluntarios() {
         Iterable<Voluntario> iterable = voluntarioRepository.findAll();
         List<Voluntario> lista = new ArrayList<>();
@@ -32,11 +34,13 @@ public class VoluntarioService {
         return lista;
     }
 
+    @Transactional(readOnly = true)
     public Voluntario getVoluntarioById(Long voluntarioId) {
         return voluntarioRepository.findById(voluntarioId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(voluntarioId));
     }
 
+    @Transactional
     public Voluntario cadastrarVoluntario(String nome, String cpf, LocalDateTime dataNascimento, String email, String senha, String telefone) {
         if(voluntarioRepository.existsByCpf(cpf)) {
             throw new CpfJaCadastradoException(cpf);
@@ -54,6 +58,7 @@ public class VoluntarioService {
         );
     }
 
+    @Transactional
     public Voluntario atualizarVoluntario(Long voluntarioId, String nome, String cpf, LocalDateTime dataNascimento, String email, String senha, String telefone) {
         Voluntario voluntario = getVoluntarioById(voluntarioId);
 
@@ -76,6 +81,7 @@ public class VoluntarioService {
         return voluntarioRepository.save(voluntario);
     }
 
+    @Transactional
     public void apagarVoluntario(Long voluntarioId) {
         Optional<Voluntario> voluntarioOpt = voluntarioRepository.findById(voluntarioId);
 
@@ -84,6 +90,6 @@ public class VoluntarioService {
         }
 
         voluntarioRepository.delete(voluntarioOpt.get());
-        usuarioService.apagarUsuario(1L);
+        usuarioService.apagarUsuario(voluntarioId);
     }
 }
