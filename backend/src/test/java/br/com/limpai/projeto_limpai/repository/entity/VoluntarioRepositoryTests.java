@@ -13,7 +13,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.TestPropertySource;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,7 +45,7 @@ public class VoluntarioRepositoryTests {
         u.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
         usuarioRepository.save(u);
 
-        voluntarioRepository.insertVoluntario(u.getUsuarioId(), "Luis", "111.111.111-11", LocalDateTime.now());
+        voluntarioRepository.insertVoluntario(u.getUsuarioId(), "Luis", "111.111.111-11", LocalDate.now());
 
         assertTrue(voluntarioRepository.findById(u.getUsuarioId()).isPresent());
     }

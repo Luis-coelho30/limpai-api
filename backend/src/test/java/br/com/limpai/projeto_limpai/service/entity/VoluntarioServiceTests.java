@@ -14,7 +14,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,13 +42,13 @@ public class VoluntarioServiceTests {
         v1.setVoluntarioId(1L);
         v1.setNome("Claudio");
         v1.setCpf("111.111.111-11");
-        v1.setDataNascimento(LocalDateTime.MAX);
+        v1.setDataNascimento(LocalDate.now());
 
         Voluntario v2 = new Voluntario();
         v2.setVoluntarioId(2L);
         v2.setNome("Brito");
         v2.setCpf("111.111.222-22");
-        v2.setDataNascimento(LocalDateTime.MAX);
+        v2.setDataNascimento(LocalDate.now());
 
         List<Voluntario> voluntariosFake = List.of(v1, v2);
 
@@ -59,12 +62,12 @@ public class VoluntarioServiceTests {
                 () -> assertEquals(1L, resultado.getFirst().getVoluntarioId()),
                 () -> assertEquals("Claudio", resultado.getFirst().getNome()),
                 () -> assertEquals("111.111.111-11", resultado.getFirst().getCpf()),
-                () -> assertEquals(LocalDateTime.MAX, resultado.getFirst().getDataNascimento()),
+                () -> assertEquals(LocalDate.now(), resultado.getFirst().getDataNascimento()),
 
                 () -> assertEquals(2L, resultado.get(1).getVoluntarioId()),
                 () -> assertEquals("Brito", resultado.get(1).getNome()),
                 () -> assertEquals("111.111.222-22", resultado.get(1).getCpf()),
-                () -> assertEquals(LocalDateTime.MAX, resultado.get(1).getDataNascimento())
+                () -> assertEquals(LocalDate.now(), resultado.get(1).getDataNascimento())
         );
 
     }
@@ -75,7 +78,7 @@ public class VoluntarioServiceTests {
         v1.setVoluntarioId(1L);
         v1.setNome("Claudio");
         v1.setCpf("111.111.111-11");
-        v1.setDataNascimento(LocalDateTime.MAX);
+        v1.setDataNascimento(LocalDate.now());
 
         Mockito.when(voluntarioRepository.findById(1L))
                 .thenReturn(Optional.of(v1));
@@ -86,7 +89,7 @@ public class VoluntarioServiceTests {
                 () -> assertEquals(1L, voluntario.getVoluntarioId()),
                 () -> assertEquals("Claudio", voluntario.getNome()),
                 () -> assertEquals("111.111.111-11", voluntario.getCpf()),
-                () -> assertEquals(LocalDateTime.MAX, voluntario.getDataNascimento())
+                () -> assertEquals(LocalDate.now(), voluntario.getDataNascimento())
         );
     }
 
@@ -110,17 +113,17 @@ public class VoluntarioServiceTests {
                 Mockito.anyLong(),
                 Mockito.anyString(),
                 Mockito.anyString(),
-                Mockito.any(LocalDateTime.class)
+                Mockito.any(LocalDate.class)
         );
 
-        Voluntario voluntario = voluntarioService.cadastrarVoluntario("Claudio", "111.111.111-11", LocalDateTime.MAX,
+        Voluntario voluntario = voluntarioService.cadastrarVoluntario("Claudio", "111.111.111-11", LocalDate.now(),
                 "teste@empresa.com", "senha123", "11 11111-1111");
 
         assertAll(
                 () -> assertEquals(1L, voluntario.getVoluntarioId()),
                 () -> assertEquals("Claudio", voluntario.getNome()),
                 () -> assertEquals("111.111.111-11", voluntario.getCpf()),
-                () -> assertEquals(LocalDateTime.MAX, voluntario.getDataNascimento())
+                () -> assertEquals(LocalDate.now(), voluntario.getDataNascimento())
         );
 
         Mockito.verify(usuarioService).criarUsuarioBase(
@@ -133,14 +136,14 @@ public class VoluntarioServiceTests {
                 usuario.getUsuarioId(),
                 "Claudio",
                 "111.111.111-11",
-                LocalDateTime.MAX
+                LocalDate.now()
         );
     }
 
     @Test
     public void deveAtualizarVoluntario() {
         Mockito.when(voluntarioRepository.findById(1L))
-                .thenReturn(Optional.of(new Voluntario(1L,"Claudio", "111.111.111-11", LocalDateTime.MAX)));
+                .thenReturn(Optional.of(new Voluntario(1L,"Claudio", "111.111.111-11", LocalDate.now())));
 
         Mockito.when(usuarioService.
                         atualizarUsuario(1L, "novoteste@empresa.com", "senha123", "11 55555-1111", UsuarioEnum.VOLUNTARIO))
@@ -150,14 +153,14 @@ public class VoluntarioServiceTests {
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         Voluntario voluntario = voluntarioService.
-                atualizarVoluntario(1L, "Claudio", "111.111.111-11", LocalDateTime.MAX,
+                atualizarVoluntario(1L, "Claudio", "111.111.111-11", LocalDate.now(),
                         "novoteste@empresa.com", "senha123", "11 55555-1111");
 
         assertAll(
                 () -> assertEquals(1L, voluntario.getVoluntarioId()),
                 () -> assertEquals("Claudio", voluntario.getNome()),
                 () -> assertEquals("111.111.111-11", voluntario.getCpf()),
-                () -> assertEquals(LocalDateTime.MAX, voluntario.getDataNascimento())
+                () -> assertEquals(LocalDate.now(), voluntario.getDataNascimento())
         );
 
         Mockito.verify(voluntarioRepository).findById(1L);
@@ -174,7 +177,7 @@ public class VoluntarioServiceTests {
 
     @Test
     public void deveApagarVoluntario() {
-        Voluntario existente = new Voluntario(1L, "Claudio", "111.111.111-11", LocalDateTime.MAX);
+        Voluntario existente = new Voluntario(1L, "Claudio", "111.111.111-11", LocalDate.now());
         Mockito.when(voluntarioRepository.findById(1L))
                 .thenReturn(Optional.of(existente));
 
@@ -190,7 +193,7 @@ public class VoluntarioServiceTests {
 
     @Test
     public void deveLancarExcecaoSeCpfExistir() {
-        Voluntario existente = new Voluntario(1L, "Claudio", "111.111.111-11", LocalDateTime.MAX);
+        Voluntario existente = new Voluntario(1L, "Claudio", "111.111.111-11", LocalDate.now());
         Mockito.when(voluntarioRepository.findById(1L))
                 .thenReturn(Optional.of(existente));
 
@@ -202,7 +205,7 @@ public class VoluntarioServiceTests {
                         voluntarioService.cadastrarVoluntario(
                                 "Claudio",
                                 "111.222.333-11",
-                                LocalDateTime.MAX,
+                                LocalDate.now(),
                                 "teste@empresa.com",
                                 "senha123",
                                 "11 11111-1111")
@@ -213,7 +216,7 @@ public class VoluntarioServiceTests {
                                 1L,
                                 "Joao",
                                 "111.222.333-11",
-                                LocalDateTime.MIN,
+                                LocalDate.now(),
                                 "novo@empresa.com",
                                 "senha1234",
                                 "11 55555-1111"

@@ -1,11 +1,10 @@
 package br.com.limpai.projeto_limpai.model.entity;
 
-import br.com.limpai.projeto_limpai.types.UsuarioEnum;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Table("voluntario")
@@ -19,12 +18,12 @@ public class Voluntario {
     @Column("cpf")
     private String cpf;
     @Column("data_nascimento")
-    private LocalDateTime dataNascimento;
+    private LocalDate dataNascimento;
 
     public Voluntario() {
     }
 
-    public Voluntario(Long voluntarioId, String nome, String cpf, LocalDateTime dataNascimento) {
+    public Voluntario(Long voluntarioId, String nome, String cpf, LocalDate dataNascimento) {
         this.voluntarioId = voluntarioId;
         this.nome = nome;
         this.cpf = cpf;
@@ -55,11 +54,11 @@ public class Voluntario {
         this.cpf = cpf;
     }
 
-    public LocalDateTime getDataNascimento() {
+    public LocalDate getDataNascimento() {
         return dataNascimento;
     }
 
-    public void setDataNascimento(LocalDateTime dataNascimento) {
+    public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
 

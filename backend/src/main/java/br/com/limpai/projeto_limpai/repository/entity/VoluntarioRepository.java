@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Repository
 public interface VoluntarioRepository extends CrudRepository<Voluntario, Long> {
@@ -18,7 +18,7 @@ public interface VoluntarioRepository extends CrudRepository<Voluntario, Long> {
     void insertVoluntario(@Param("usuarioId") Long usuarioId,
                             @Param("nome") String nome,
                             @Param("cpf") String cpf,
-                            @Param("dataNascimento") LocalDateTime dataNascimento);
+                            @Param("dataNascimento") LocalDate dataNascimento);
 
     boolean existsByCpf(String cpf);
 }

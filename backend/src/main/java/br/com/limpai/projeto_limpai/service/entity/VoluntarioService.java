@@ -9,13 +9,13 @@ import br.com.limpai.projeto_limpai.types.UsuarioEnum;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class VoluntarioService {
+public class    VoluntarioService {
 
     private final VoluntarioRepository voluntarioRepository;
     private final UsuarioService usuarioService;
@@ -41,7 +41,7 @@ public class VoluntarioService {
     }
 
     @Transactional
-    public Voluntario cadastrarVoluntario(String nome, String cpf, LocalDateTime dataNascimento, String email, String senha, String telefone) {
+    public Voluntario cadastrarVoluntario(String nome, String cpf, LocalDate dataNascimento, String email, String senha, String telefone) {
         if(voluntarioRepository.existsByCpf(cpf)) {
             throw new CpfJaCadastradoException(cpf);
         }
@@ -59,7 +59,7 @@ public class VoluntarioService {
     }
 
     @Transactional
-    public Voluntario atualizarVoluntario(Long voluntarioId, String nome, String cpf, LocalDateTime dataNascimento, String email, String senha, String telefone) {
+    public Voluntario atualizarVoluntario(Long voluntarioId, String nome, String cpf, LocalDate dataNascimento, String email, String senha, String telefone) {
         Voluntario voluntario = getVoluntarioById(voluntarioId);
 
         if (!voluntario.getCpf().equals(cpf) && voluntarioRepository.existsByCpf(cpf)) {
