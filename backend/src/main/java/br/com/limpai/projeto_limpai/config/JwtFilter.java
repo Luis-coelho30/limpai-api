@@ -1,6 +1,6 @@
 package br.com.limpai.projeto_limpai.config;
 
-import br.com.limpai.projeto_limpai.service.JwtService;
+import br.com.limpai.projeto_limpai.service.security.JwtService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
