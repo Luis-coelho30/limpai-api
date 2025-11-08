@@ -1,4 +1,4 @@
-package br.com.limpai.projeto_limpai.dto;
+package br.com.limpai.projeto_limpai.dto.cadastro;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

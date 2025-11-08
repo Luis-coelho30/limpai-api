@@ -1,4 +1,4 @@
-package br.com.limpai.projeto_limpai.dto;
+package br.com.limpai.projeto_limpai.dto.cadastro;
 
 public record PatrocinadorCadastroDTO (String email,
                                        String senha,
