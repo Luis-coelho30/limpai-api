@@ -1,4 +1,4 @@
-package br.com.limpai.projeto_limpai.dto;
+package br.com.limpai.projeto_limpai.dto.internal;
 
 
 import br.com.limpai.projeto_limpai.model.entity.Usuario;

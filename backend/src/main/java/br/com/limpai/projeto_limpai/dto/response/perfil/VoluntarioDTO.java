@@ -1,4 +1,4 @@
-package br.com.limpai.projeto_limpai.dto;
+package br.com.limpai.projeto_limpai.dto.response.perfil;
 
 import br.com.limpai.projeto_limpai.model.entity.Voluntario;
 

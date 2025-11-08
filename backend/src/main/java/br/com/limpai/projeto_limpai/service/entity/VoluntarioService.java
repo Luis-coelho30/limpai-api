@@ -1,8 +1,8 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
-import br.com.limpai.projeto_limpai.dto.RegistroDTO;
-import br.com.limpai.projeto_limpai.dto.VoluntarioDTO;
-import br.com.limpai.projeto_limpai.dto.cadastro.VoluntarioCadastroDTO;
+import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.VoluntarioDTO;
+import br.com.limpai.projeto_limpai.dto.request.cadastro.VoluntarioCadastroDTO;
 import br.com.limpai.projeto_limpai.exception.user.CpfJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.user.UsuarioNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Usuario;
