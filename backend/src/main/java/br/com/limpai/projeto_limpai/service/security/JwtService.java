@@ -1,12 +1,14 @@
-package br.com.limpai.projeto_limpai.service;
+package br.com.limpai.projeto_limpai.service.security;
 
 import br.com.limpai.projeto_limpai.exception.user.CredenciaisIncorretasException;
-import br.com.limpai.projeto_limpai.exception.user.JwtParsingException;
+import br.com.limpai.projeto_limpai.exception.security.JwtParsingException;
+import br.com.limpai.projeto_limpai.model.entity.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,25 @@ public class JwtService {
     @Value("${limpai.jwt.secret}")
     private String secretKey;
 
-    private String generateToken(Long id, String email, String role) {
+    public String generateToken(UserDetails userDetails) {
+        long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15;
+        return buildToken(userDetails, ACCESS_TOKEN_EXPIRATION);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7;
+        return buildToken(userDetails, REFRESH_TOKEN_EXPIRATION);
+    }
+
+    private String buildToken(UserDetails userDetails, long expirationTime) {
+        String email = userDetails.getUsername();
+        String role = userDetails.getAuthorities().stream()
+                .findFirst().map(GrantedAuthority::getAuthority)
+                .orElseThrow(() -> new JwtParsingException("Erro ao encontrar a role do usuário"));
+
+        UserDetailsImpl customUserDetails = (UserDetailsImpl) userDetails;
+        Long id = customUserDetails.getId();
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", id.toString());
         claims.put("email", email);
@@ -32,7 +52,7 @@ public class JwtService {
                 .claims(claims)
                 .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 5 * 60 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getKey(), Jwts.SIG.HS256)
                 .compact();
     }

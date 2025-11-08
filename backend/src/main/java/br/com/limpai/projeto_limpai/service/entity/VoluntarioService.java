@@ -1,5 +1,8 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
+import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.VoluntarioDTO;
+import br.com.limpai.projeto_limpai.dto.request.cadastro.VoluntarioCadastroDTO;
 import br.com.limpai.projeto_limpai.exception.user.CpfJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.user.UsuarioNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Usuario;
@@ -9,7 +12,6 @@ import br.com.limpai.projeto_limpai.types.UsuarioEnum;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,59 +28,78 @@ public class VoluntarioService {
     }
 
     @Transactional(readOnly = true)
-    public List<Voluntario> listarVoluntarios() {
+    public List<VoluntarioDTO> listarVoluntarios() {
         Iterable<Voluntario> iterable = voluntarioRepository.findAll();
-        List<Voluntario> lista = new ArrayList<>();
-        iterable.forEach(lista::add);
+        List<VoluntarioDTO> lista = new ArrayList<>();
+        iterable.forEach(voluntario -> lista.add(VoluntarioDTO.from(voluntario)));
 
         return lista;
     }
 
     @Transactional(readOnly = true)
-    public Voluntario getVoluntarioById(Long voluntarioId) {
-        return voluntarioRepository.findById(voluntarioId)
-                .orElseThrow(() -> new UsuarioNaoEncontradoException(voluntarioId));
+    public VoluntarioDTO getVoluntarioById(Long voluntarioId) {
+        return VoluntarioDTO.from(voluntarioRepository.findById(voluntarioId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(voluntarioId)));
     }
 
     @Transactional
-    public Voluntario cadastrarVoluntario(String nome, String cpf, LocalDateTime dataNascimento, String email, String senha, String telefone) {
-        if(voluntarioRepository.existsByCpf(cpf)) {
-            throw new CpfJaCadastradoException(cpf);
+    public RegistroDTO cadastrarVoluntario(VoluntarioCadastroDTO voluntarioDTO) {
+        if(voluntarioRepository.existsByCpf(voluntarioDTO.cpf())) {
+            throw new CpfJaCadastradoException(voluntarioDTO.cpf());
         }
 
-        Usuario usuarioCriado = usuarioService.criarUsuarioBase(email, senha, telefone, UsuarioEnum.VOLUNTARIO);
-
-        voluntarioRepository.insertVoluntario(usuarioCriado.getUsuarioId(), nome, cpf, dataNascimento);
-
-        return new Voluntario(
-                usuarioCriado.getUsuarioId(),
-                nome,
-                cpf,
-                dataNascimento
-        );
-    }
-
-    @Transactional
-    public Voluntario atualizarVoluntario(Long voluntarioId, String nome, String cpf, LocalDateTime dataNascimento, String email, String senha, String telefone) {
-        Voluntario voluntario = getVoluntarioById(voluntarioId);
-
-        if (!voluntario.getCpf().equals(cpf) && voluntarioRepository.existsByCpf(cpf)) {
-            throw new CpfJaCadastradoException(cpf);
-        }
-
-        usuarioService.atualizarUsuario(
-                voluntarioId,
-                email,
-                senha,
-                telefone,
+        Usuario usuarioCriado = usuarioService.criarUsuarioBase(
+                voluntarioDTO.email(),
+                voluntarioDTO.senha(),
+                voluntarioDTO.telefone(),
                 UsuarioEnum.VOLUNTARIO
         );
 
-        voluntario.setNome(nome);
-        voluntario.setCpf(cpf);
-        voluntario.setDataNascimento(dataNascimento);
+        voluntarioRepository.insertVoluntario(
+                usuarioCriado.getUsuarioId(),
+                voluntarioDTO.nome(),
+                voluntarioDTO.cpf(),
+                voluntarioDTO.dataNascimento()
+        );
 
-        return voluntarioRepository.save(voluntario);
+        return new RegistroDTO(
+                usuarioCriado.getUsuarioId(),
+                voluntarioDTO.nome(),
+                usuarioCriado
+        );
+    }
+
+    @Transactional
+    public RegistroDTO atualizarVoluntario(Long voluntarioId, VoluntarioCadastroDTO voluntarioDTO) {
+        Voluntario voluntario = voluntarioRepository.findById(voluntarioId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(voluntarioId));
+
+        if (!voluntario.getCpf().equals(voluntarioDTO.cpf()) && voluntarioRepository.existsByCpf(voluntarioDTO.cpf())) {
+            throw new CpfJaCadastradoException(voluntarioDTO.cpf());
+        }
+
+        Usuario usuarioAtualizado;
+
+        usuarioAtualizado = usuarioService.
+                atualizarUsuario(
+                        voluntarioId,
+                        voluntarioDTO.email(),
+                        voluntarioDTO.senha(),
+                        voluntarioDTO.telefone(),
+                        UsuarioEnum.VOLUNTARIO
+                );
+
+        voluntario.setNome(voluntarioDTO.nome());
+        voluntario.setCpf(voluntarioDTO.cpf());
+        voluntario.setDataNascimento(voluntarioDTO.dataNascimento());
+
+        voluntarioRepository.save(voluntario);
+
+        return new RegistroDTO(
+                voluntario.getVoluntarioId(),
+                voluntario.getNome(),
+                usuarioAtualizado
+        );
     }
 
     @Transactional

@@ -5,6 +5,8 @@ import br.com.limpai.projeto_limpai.exception.user.UsuarioNaoEncontradoException
 import br.com.limpai.projeto_limpai.model.entity.Usuario;
 import br.com.limpai.projeto_limpai.repository.entity.UsuarioRepository;
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
@@ -36,7 +40,7 @@ public class UsuarioService {
 
         Usuario usuario = new Usuario();
         usuario.setEmail(email);
-        usuario.setSenha(senha);
+        usuario.setSenha(encoder.encode(senha));
         usuario.setTelefone(telefone);
         usuario.setTipoUsuario(tipoUsuario);
 
@@ -53,10 +57,35 @@ public class UsuarioService {
             throw new EmailJaCadastradoException(email);
         }
 
+        if (senha != null && !senha.isEmpty() && !encoder.matches(senha, usuario.getSenha())) {
+            usuario.setSenha(encoder.encode(senha));
+        }
+
         usuario.setEmail(email);
-        usuario.setSenha(senha);
         usuario.setTelefone(telefone);
         usuario.setTipoUsuario(tipoUsuario);
+
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario atualizarEmail(Long usuarioId, String email) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
+
+        usuario.setEmail(email);
+
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario atualizarSenha(Long usuarioId, String senha) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
+
+        if (senha != null && !senha.isEmpty() && !encoder.matches(senha, usuario.getSenha())) {
+            usuario.setSenha(encoder.encode(senha));
+        }
 
         return usuarioRepository.save(usuario);
     }
@@ -74,5 +103,4 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(email));
     }
-
 }

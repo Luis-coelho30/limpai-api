@@ -1,5 +1,8 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
+import br.com.limpai.projeto_limpai.dto.response.perfil.PatrocinadorDTO;
+import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
+import br.com.limpai.projeto_limpai.dto.request.cadastro.PatrocinadorCadastroDTO;
 import br.com.limpai.projeto_limpai.exception.user.CnpjJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.user.UsuarioNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Patrocinador;
@@ -25,59 +28,75 @@ public class PatrocinadorService {
     }
 
     @Transactional(readOnly = true)
-    public List<Patrocinador> listarPatrocinadores() {
+    public List<PatrocinadorDTO> listarPatrocinadores() {
         Iterable<Patrocinador> iterable = patrocinadorRepository.findAll();
-        List<Patrocinador> lista = new ArrayList<>();
-        iterable.forEach(lista::add);
+        List<PatrocinadorDTO> lista = new ArrayList<>();
+        iterable.forEach(patrocinador -> lista.add(PatrocinadorDTO.from(patrocinador)));
 
         return lista;
     }
 
     @Transactional(readOnly = true)
-    public Patrocinador getPatrocinadorById(Long patrocinadorId) {
-        return patrocinadorRepository.findById(patrocinadorId)
-                .orElseThrow(() -> new UsuarioNaoEncontradoException(patrocinadorId));
+    public PatrocinadorDTO getPatrocinadorById(Long patrocinadorId) {
+        return PatrocinadorDTO.from(patrocinadorRepository.findById(patrocinadorId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(patrocinadorId)));
     }
 
     @Transactional
-    public Patrocinador cadastrarPatrocinador(String razaoSocial, String nomeFantasia, String cnpj, String email, String senha, String telefone) {
-        if(patrocinadorRepository.existsByCnpj(cnpj)) {
-            throw new CnpjJaCadastradoException(cnpj);
+    public RegistroDTO cadastrarPatrocinador(PatrocinadorCadastroDTO patrocinadorDTO) {
+        if(patrocinadorRepository.existsByCnpj(patrocinadorDTO.cnpj())) {
+            throw new CnpjJaCadastradoException(patrocinadorDTO.cnpj());
         }
 
-        Usuario usuarioCriado = usuarioService.criarUsuarioBase(email, senha, telefone, UsuarioEnum.PATROCINADOR);
-
-        patrocinadorRepository.insertPatrocinador(usuarioCriado.getUsuarioId(), razaoSocial,nomeFantasia, cnpj);
-
-        return new Patrocinador(
-                usuarioCriado.getUsuarioId(),
-                razaoSocial,
-                nomeFantasia,
-                cnpj
-        );
-    }
-
-    @Transactional
-    public Patrocinador atualizarPatrocinador(Long patrocinadorId, String razaoSocial, String nomeFantasia, String cnpj, String email, String senha, String telefone) {
-        Patrocinador patrocinador = getPatrocinadorById(patrocinadorId);
-
-        if (!patrocinador.getCnpj().equals(cnpj) && patrocinadorRepository.existsByCnpj(cnpj)) {
-            throw new CnpjJaCadastradoException(cnpj);
-        }
-
-        usuarioService.atualizarUsuario(
-                patrocinadorId,
-                email,
-                senha,
-                telefone,
+        Usuario usuarioCriado = usuarioService.criarUsuarioBase(
+                patrocinadorDTO.email(),
+                patrocinadorDTO.senha(),
+                patrocinadorDTO.telefone(),
                 UsuarioEnum.PATROCINADOR
         );
 
-        patrocinador.setRazaoSocial(razaoSocial);
-        patrocinador.setNomeFantasia(nomeFantasia);
-        patrocinador.setCnpj(cnpj);
+        patrocinadorRepository.insertPatrocinador(
+                usuarioCriado.getUsuarioId(),
+                patrocinadorDTO.razaoSocial(),
+                patrocinadorDTO.nomeFantasia(),
+                patrocinadorDTO.cnpj()
+        );
 
-        return patrocinadorRepository.save(patrocinador);
+        return new RegistroDTO(
+                usuarioCriado.getUsuarioId(),
+                patrocinadorDTO.nomeFantasia(),
+                usuarioCriado
+        );
+    }
+
+    @Transactional
+    public RegistroDTO atualizarPatrocinador(Long patrocinadorId, PatrocinadorCadastroDTO patrocinadorDTO) {
+        Patrocinador patrocinador = patrocinadorRepository.findById(patrocinadorId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(patrocinadorId));
+
+        if (!patrocinador.getCnpj().equals(patrocinadorDTO.cnpj()) && patrocinadorRepository.existsByCnpj(patrocinadorDTO.cnpj())) {
+            throw new CnpjJaCadastradoException(patrocinadorDTO.cnpj());
+        }
+
+        Usuario usuarioAtualizado = usuarioService.atualizarUsuario(
+                                            patrocinadorId,
+                                            patrocinadorDTO.email(),
+                                            patrocinadorDTO.senha(),
+                                            patrocinadorDTO.telefone(),
+                                            UsuarioEnum.PATROCINADOR
+                                    );
+
+        patrocinador.setRazaoSocial(patrocinadorDTO.razaoSocial());
+        patrocinador.setNomeFantasia(patrocinadorDTO.nomeFantasia());
+        patrocinador.setCnpj(patrocinadorDTO.cnpj());
+
+        patrocinadorRepository.save(patrocinador);
+
+        return new RegistroDTO(
+                usuarioAtualizado.getUsuarioId(),
+                patrocinadorDTO.nomeFantasia(),
+                usuarioAtualizado
+        );
     }
 
     @Transactional

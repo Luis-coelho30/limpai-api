@@ -1,5 +1,8 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
+import br.com.limpai.projeto_limpai.dto.response.perfil.PatrocinadorDTO;
+import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
+import br.com.limpai.projeto_limpai.dto.request.cadastro.PatrocinadorCadastroDTO;
 import br.com.limpai.projeto_limpai.exception.user.CnpjJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.user.UsuarioNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Patrocinador;
@@ -50,19 +53,15 @@ public class PatrocinadorServiceTests {
         Mockito.when(patrocinadorRepository.findAll())
                 .thenReturn(patrocinadoresFake);
 
-        List<Patrocinador> resultado = patrocinadorService.listarPatrocinadores();
+        List<PatrocinadorDTO> resultado = patrocinadorService.listarPatrocinadores();
 
         assertAll(
                 () -> assertEquals(2, resultado.size()),
-                () -> assertEquals(1L, resultado.getFirst().getPatrocinadorId()),
-                () -> assertEquals("Empresa A", resultado.getFirst().getRazaoSocial()),
-                () -> assertEquals("A Fantasia", resultado.getFirst().getNomeFantasia()),
-                () -> assertEquals("12345678000199", resultado.getFirst().getCnpj()),
+                () -> assertEquals("Empresa A", resultado.getFirst().razaoSocial()),
+                () -> assertEquals("A Fantasia", resultado.getFirst().nomeFantasia()),
 
-                () -> assertEquals(2L, resultado.get(1).getPatrocinadorId()),
-                () -> assertEquals("Empresa B", resultado.get(1).getRazaoSocial()),
-                () -> assertEquals("B Fantasia", resultado.get(1).getNomeFantasia()),
-                () -> assertEquals("98765432000188", resultado.get(1).getCnpj())
+                () -> assertEquals("Empresa B", resultado.get(1).razaoSocial()),
+                () -> assertEquals("B Fantasia", resultado.get(1).nomeFantasia())
         );
 
     }
@@ -78,13 +77,11 @@ public class PatrocinadorServiceTests {
         Mockito.when(patrocinadorRepository.findById(1L))
                 .thenReturn(Optional.of(p1));
 
-        Patrocinador patrocinador = patrocinadorService.getPatrocinadorById(1L);
+        PatrocinadorDTO patrocinadorDTO = patrocinadorService.getPatrocinadorById(1L);
 
         assertAll(
-                () -> assertEquals(1L, patrocinador.getPatrocinadorId()),
-                () -> assertEquals("Empresa A", patrocinador.getRazaoSocial()),
-                () -> assertEquals("A Fantasia", patrocinador.getNomeFantasia()),
-                () -> assertEquals("12345678000199", patrocinador.getCnpj())
+                () -> assertEquals("Empresa A", patrocinadorDTO.razaoSocial()),
+                () -> assertEquals("A Fantasia", patrocinadorDTO.nomeFantasia())
         );
 
     }
@@ -97,6 +94,15 @@ public class PatrocinadorServiceTests {
         usuario.setSenha("senha123");
         usuario.setTelefone("11 11111-1111");
         usuario.setTipoUsuario(UsuarioEnum.PATROCINADOR);
+
+        PatrocinadorCadastroDTO patrocinadorDTO = new PatrocinadorCadastroDTO(
+                usuario.getEmail(),
+                usuario.getSenha(),
+                usuario.getTelefone(),
+                "Empresa A",
+                "A Fantasia",
+                "12345678000199"
+        );
 
         Mockito.when(usuarioService.criarUsuarioBase(
                         "teste@empresa.com",
@@ -112,14 +118,11 @@ public class PatrocinadorServiceTests {
                 Mockito.anyString()
         );
 
-        Patrocinador patrocinador = patrocinadorService.cadastrarPatrocinador("Empresa A", "A Fantasia", "12345678000199",
-                                                                            "teste@empresa.com", "senha123", "11 11111-1111");
+        RegistroDTO registroDTO = patrocinadorService.cadastrarPatrocinador(patrocinadorDTO);
 
         assertAll(
-                () -> assertEquals(1L, patrocinador.getPatrocinadorId()),
-                () -> assertEquals("Empresa A", patrocinador.getRazaoSocial()),
-                () -> assertEquals("A Fantasia", patrocinador.getNomeFantasia()),
-                () -> assertEquals("12345678000199", patrocinador.getCnpj())
+                () -> assertEquals("A Fantasia", registroDTO.nome()),
+                () -> assertEquals("teste@empresa.com", registroDTO.usuario().getEmail())
         );
 
         Mockito.verify(usuarioService).criarUsuarioBase(
@@ -138,6 +141,15 @@ public class PatrocinadorServiceTests {
 
     @Test
     public void deveAtualizarPatrocinador() {
+        PatrocinadorCadastroDTO patrocinadorAtualizadoDTO = new PatrocinadorCadastroDTO(
+                "novoteste@empresa.com",
+                "senha123",
+                "11 55555-1111",
+                "Empresa A",
+                "C Fantasia",
+                "12345678000199"
+        );
+
         Mockito.when(patrocinadorRepository.findById(1L))
                 .thenReturn(Optional.of(new Patrocinador(1L,"Empresa A", "A Fantasia", "12345678000199")));
 
@@ -148,15 +160,11 @@ public class PatrocinadorServiceTests {
         Mockito.when(patrocinadorRepository.save(Mockito.any(Patrocinador.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Patrocinador patrocinador = patrocinadorService.
-                atualizarPatrocinador(1L, "Empresa C", "C Fantasia", "12345678777111",
-                                        "novoteste@empresa.com", "senha123", "11 55555-1111");
+        RegistroDTO registroDTO = patrocinadorService.atualizarPatrocinador(1L, patrocinadorAtualizadoDTO);
 
         assertAll(
-                () -> assertEquals(1L, patrocinador.getPatrocinadorId()),
-                () -> assertEquals("Empresa C", patrocinador.getRazaoSocial()),
-                () -> assertEquals("C Fantasia", patrocinador.getNomeFantasia()),
-                () -> assertEquals("12345678777111", patrocinador.getCnpj())
+                () -> assertEquals("C Fantasia", registroDTO.nome()),
+                () -> assertEquals("novoteste@empresa.com", registroDTO.usuario().getEmail())
         );
 
         Mockito.verify(patrocinadorRepository).findById(1L);
@@ -190,6 +198,25 @@ public class PatrocinadorServiceTests {
     @Test
     public void deveLancarExcecaoSeCnpjExistir() {
         Patrocinador existente = new Patrocinador(1L, "Empresa A", "A Fantasia", "12345678000199");
+
+        PatrocinadorCadastroDTO patrocinadorDTO = new PatrocinadorCadastroDTO(
+                "teste@empresa.com",
+                "senha123",
+                "11 11111-1111",
+                "Empresa A",
+                "A Fantasia",
+                "11111111000111"
+        );
+
+        PatrocinadorCadastroDTO patrocinadorAtualizadoDTO = new PatrocinadorCadastroDTO(
+                "novo@empresa.com",
+                "senha123",
+                "11 55555-1111",
+                "Empresa X",
+                "X Fantasia",
+                "11111111000111"
+        );
+
         Mockito.when(patrocinadorRepository.findById(1L))
                 .thenReturn(Optional.of(existente));
 
@@ -199,23 +226,14 @@ public class PatrocinadorServiceTests {
         Assertions.assertAll(
                 () -> assertThrows(CnpjJaCadastradoException.class, () ->
                         patrocinadorService.cadastrarPatrocinador(
-                                "Empresa A",
-                                "A Fantasia",
-                                "11111111000111",
-                                "teste@empresa.com",
-                                "senha123",
-                                "11 11111-1111")
+                                patrocinadorDTO
+                        )
                 ),
 
                 () -> assertThrows(CnpjJaCadastradoException.class, () ->
                         patrocinadorService.atualizarPatrocinador(
                                 1L,
-                                "Empresa X",
-                                "X Fantasia",
-                                "11111111000111",
-                                "novo@empresa.com",
-                                "senha123",
-                                "11 55555-1111"
+                                patrocinadorAtualizadoDTO
                         )
                 )
         );

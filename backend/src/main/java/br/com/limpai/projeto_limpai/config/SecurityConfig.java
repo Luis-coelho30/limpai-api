@@ -32,8 +32,8 @@ public class SecurityConfig {
 
     @Value("${limpai.cors.allowed-origins}")
     private String allowedOrigins;
-    private final String[] PUBLIC_ENDPOINTS = {"/usuarios/cadastrar", "/usuarios/login"};
-    private final String[] ADMIN_ENDPOINTS = {"/h2-console/**", "/scalar/**", "/v3/api-docs/**"};
+    private final String[] PUBLIC_ENDPOINTS = {"/auth/cadastrar/voluntario", "/auth/cadastrar/patrocinador", "/auth/login"};
+    private final String[] ADMIN_ENDPOINTS = {"/scalar/**", "/v3/api-docs/**"};
     private final UserDetailsService userDetailsService;
     private final JwtFilter jwtFilter;
 
@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(ADMIN_ENDPOINTS).hasRole("ADMIN")
+                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->

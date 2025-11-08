@@ -4,6 +4,8 @@ import br.com.limpai.projeto_limpai.exception.campanha.UsuarioJaEstaInscritoExce
 import br.com.limpai.projeto_limpai.exception.campanha.UsuarioNaoEstaInscritoException;
 import br.com.limpai.projeto_limpai.exception.geography.LocalJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoException;
+import br.com.limpai.projeto_limpai.exception.security.JwtParsingException;
+import br.com.limpai.projeto_limpai.exception.security.ServletResponseException;
 import br.com.limpai.projeto_limpai.exception.user.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -78,6 +80,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(JwtParsingException.class)
     public ResponseEntity<String> handleJwtParsing(JwtParsingException ex) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR) // 500
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ServletResponseException.class)
+    public ResponseEntity<String> handleServletResponse(ServletResponseException ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR) // 500
                 .body(ex.getMessage());

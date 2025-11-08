@@ -21,6 +21,10 @@ public class UserDetailsImpl implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role));
     }
 
+    public Long getId() {
+        return usuario.getUsuarioId();
+    }
+
     @Override
     public String getPassword() {
         return usuario.getSenha();
