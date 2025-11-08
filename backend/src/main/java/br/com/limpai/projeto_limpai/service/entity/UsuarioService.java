@@ -69,6 +69,28 @@ public class UsuarioService {
     }
 
     @Transactional
+    public Usuario atualizarEmail(Long usuarioId, String email) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
+
+        usuario.setEmail(email);
+
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario atualizarSenha(Long usuarioId, String senha) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
+
+        if (senha != null && !senha.isEmpty() && !encoder.matches(senha, usuario.getSenha())) {
+            usuario.setSenha(encoder.encode(senha));
+        }
+
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
     public void apagarUsuario(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));

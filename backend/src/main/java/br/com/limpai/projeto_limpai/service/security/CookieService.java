@@ -16,8 +16,6 @@ import java.util.Optional;
 @Service
 public class CookieService {
 
-    private final long REFRESH_TOKEN_EXPIRES_IN = 7 * 24 * 60 * 60;
-
     public void setRefreshToken(String refreshToken) {
 
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
@@ -26,6 +24,7 @@ public class CookieService {
             throw new ServletResponseException("Não foi possível encontrar o HttpServletResponse.");
         }
 
+        long REFRESH_TOKEN_EXPIRES_IN = 7 * 24 * 60 * 60;
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
