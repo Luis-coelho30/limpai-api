@@ -1,4 +1,4 @@
-package br.com.limpai.projeto_limpai.dto.request.voluntario;
+package br.com.limpai.projeto_limpai.dto.request.entity;
 
 import java.time.LocalDate;
 

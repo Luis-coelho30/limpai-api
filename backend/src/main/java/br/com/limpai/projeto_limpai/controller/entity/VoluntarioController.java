@@ -1,6 +1,6 @@
 package br.com.limpai.projeto_limpai.controller.entity;
 
-import br.com.limpai.projeto_limpai.dto.request.voluntario.AtualizarVoluntarioRequestDTO;
+import br.com.limpai.projeto_limpai.dto.request.entity.AtualizarVoluntarioRequestDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioMinDTO;
 import br.com.limpai.projeto_limpai.model.entity.UserDetailsImpl;

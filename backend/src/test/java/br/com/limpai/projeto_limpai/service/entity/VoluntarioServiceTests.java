@@ -1,7 +1,7 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
 import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
-import br.com.limpai.projeto_limpai.dto.request.voluntario.AtualizarVoluntarioRequestDTO;
+import br.com.limpai.projeto_limpai.dto.request.entity.AtualizarVoluntarioRequestDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioMinDTO;
 import br.com.limpai.projeto_limpai.dto.request.cadastro.VoluntarioCadastroDTO;

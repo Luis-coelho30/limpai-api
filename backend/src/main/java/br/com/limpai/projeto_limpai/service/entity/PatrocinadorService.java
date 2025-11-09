@@ -1,5 +1,6 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
+import br.com.limpai.projeto_limpai.dto.request.entity.AtualizarPatrocinadorRequestDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.patrocinador.PatrocinadorDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.patrocinador.PatrocinadorMinDTO;
 import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
@@ -79,7 +80,7 @@ public class PatrocinadorService {
         Patrocinador patrocinador = patrocinadorRepository.findById(patrocinadorId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(patrocinadorId));
 
-        if (!patrocinador.getCnpj().equals(patrocinadorDTO.cnpj()) && patrocinadorRepository.existsByCnpj(patrocinadorDTO.cnpj())) {
+        if (verificarCnpjJaExiste(patrocinador.getCnpj(), patrocinadorDTO.cnpj())) {
             throw new CnpjJaCadastradoException(patrocinadorDTO.cnpj());
         }
 
@@ -105,6 +106,40 @@ public class PatrocinadorService {
     }
 
     @Transactional
+    public PatrocinadorDTO atualizarParcial(Long patrocinadorId, AtualizarPatrocinadorRequestDTO patrocinadorRequestDTO) {
+        Patrocinador patrocinador = patrocinadorRepository.findById(patrocinadorId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(patrocinadorId));
+
+        if (patrocinadorRequestDTO.nomeFantasia() != null && !patrocinadorRequestDTO.nomeFantasia().isBlank()) {
+            patrocinador.setNomeFantasia(patrocinadorRequestDTO.nomeFantasia());
+        }
+
+        if (patrocinadorRequestDTO.razaoSocial() != null && !patrocinadorRequestDTO.razaoSocial().isBlank()) {
+            patrocinador.setRazaoSocial(patrocinadorRequestDTO.razaoSocial());
+        }
+
+        if (patrocinadorRequestDTO.cnpj() != null && !patrocinadorRequestDTO.cnpj().isBlank()) {
+            if (verificarCnpjJaExiste(patrocinador.getCnpj(), patrocinadorRequestDTO.cnpj())) {
+                throw new CnpjJaCadastradoException(patrocinadorRequestDTO.cnpj());
+            }
+
+            patrocinador.setCnpj(patrocinadorRequestDTO.cnpj());
+        }
+
+        Usuario usuario;
+
+        if (patrocinadorRequestDTO.telefone() != null && !patrocinadorRequestDTO.telefone().isBlank()) {
+            usuario = usuarioService.atualizarTelefone(patrocinador.getPatrocinadorId(), patrocinadorRequestDTO.telefone());
+        } else {
+            usuario = usuarioService.getUsuarioPorId(patrocinadorId);
+        }
+
+        patrocinadorRepository.save(patrocinador);
+
+        return PatrocinadorDTO.from(patrocinador, usuario);
+    }
+
+    @Transactional
     public void apagarPatrocinador(Long patrocinadorId) {
         Optional<Patrocinador> patrocinadorOpt = patrocinadorRepository.findById(patrocinadorId);
 
@@ -114,5 +149,9 @@ public class PatrocinadorService {
 
         patrocinadorRepository.delete(patrocinadorOpt.get());
         usuarioService.apagarUsuario(patrocinadorId);
+    }
+
+    private boolean verificarCnpjJaExiste(String cnpj, String cnpjNovo) {
+        return !cnpj.equals(cnpjNovo) && patrocinadorRepository.existsByCnpj(cnpjNovo);
     }
 }

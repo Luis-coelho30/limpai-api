@@ -1,5 +1,6 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
+import br.com.limpai.projeto_limpai.dto.request.entity.AtualizarPatrocinadorRequestDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.patrocinador.PatrocinadorDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.patrocinador.PatrocinadorMinDTO;
 import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
@@ -10,7 +11,6 @@ import br.com.limpai.projeto_limpai.model.entity.Patrocinador;
 import br.com.limpai.projeto_limpai.model.entity.Usuario;
 import br.com.limpai.projeto_limpai.repository.entity.PatrocinadorRepository;
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -197,6 +197,45 @@ public class PatrocinadorServiceTests {
     }
 
     @Test
+    public void deveAtualizarPatrocinadorParcialmente() {
+        AtualizarPatrocinadorRequestDTO patrocinadorRequestDTO = new AtualizarPatrocinadorRequestDTO(
+                "Empresa C",
+                "A Fantasia",
+                "12345678000199",
+                "11 11111-1111"
+        );
+
+        Mockito.when(patrocinadorRepository.findById(1L))
+                .thenReturn(Optional.of(new Patrocinador(1L,"A Fantasia", "Empresa A", "12345678000199")));
+
+        Mockito.when(usuarioService.
+                        atualizarTelefone(1L, "11 11111-1111"))
+                .thenReturn(new Usuario(1L,"novoteste@empresa.com", "senha123", "11 11111-1111", UsuarioEnum.PATROCINADOR));
+
+        Mockito.when(patrocinadorRepository.save(Mockito.any(Patrocinador.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        PatrocinadorDTO patrocinadorDTO = patrocinadorService.atualizarParcial(1L, patrocinadorRequestDTO);
+
+        assertAll(
+                () -> assertEquals("Empresa C", patrocinadorDTO.nomeFantasia()),
+                () -> assertEquals("A Fantasia", patrocinadorDTO.razaoSocial()),
+                () -> assertEquals("12345678000199", patrocinadorDTO.cnpj()),
+                () -> assertEquals("novoteste@empresa.com", patrocinadorDTO.email()),
+                () -> assertEquals("11 11111-1111", patrocinadorDTO.telefone())
+        );
+
+        Mockito.verify(patrocinadorRepository).findById(1L);
+
+        Mockito.verify(usuarioService).atualizarTelefone(
+                1L,
+                "11 11111-1111"
+        );
+
+        Mockito.verify(patrocinadorRepository).save(Mockito.any(Patrocinador.class));
+    }
+
+    @Test
     public void deveApagarPatrocinador() {
         Patrocinador existente = new Patrocinador(1L, "Empresa A", "A Fantasia", "12345678000199");
         Mockito.when(patrocinadorRepository.findById(1L))
@@ -213,51 +252,42 @@ public class PatrocinadorServiceTests {
     }
 
     @Test
-    public void deveLancarExcecaoSeCnpjExistir() {
+    public void deveLancarExcecaoSeCnpjExistirNoCadastro() {
+        PatrocinadorCadastroDTO dto = new PatrocinadorCadastroDTO(
+                "teste@empresa.com", "senha123", "11 11111-1111",
+                "Empresa A", "A Fantasia", "11111111000111"
+        );
+
+        Mockito.when(patrocinadorRepository.existsByCnpj("11111111000111")).thenReturn(true);
+
+        assertThrows(CnpjJaCadastradoException.class, () ->
+                patrocinadorService.cadastrarPatrocinador(dto)
+        );
+
+        Mockito.verify(patrocinadorRepository).existsByCnpj("11111111000111");
+        Mockito.verifyNoInteractions(usuarioService);
+    }
+
+    @Test
+    public void deveLancarExcecaoSeCnpjExistirNaAtualizacao() {
         Patrocinador existente = new Patrocinador(1L, "Empresa A", "A Fantasia", "12345678000199");
+        Usuario usuario = new Usuario(1L, "teste@email.com", "senha123", "11 11111-1111", UsuarioEnum.PATROCINADOR);
 
-        PatrocinadorCadastroDTO patrocinadorDTO = new PatrocinadorCadastroDTO(
-                "teste@empresa.com",
-                "senha123",
-                "11 11111-1111",
-                "Empresa A",
-                "A Fantasia",
-                "11111111000111"
+        PatrocinadorCadastroDTO dtoAtualizacao = new PatrocinadorCadastroDTO(
+                "novo@empresa.com", "senha123", "11 55555-1111",
+                "Empresa X", "X Fantasia", "11111111000111"
         );
 
-        PatrocinadorCadastroDTO patrocinadorAtualizadoDTO = new PatrocinadorCadastroDTO(
-                "novo@empresa.com",
-                "senha123",
-                "11 55555-1111",
-                "Empresa X",
-                "X Fantasia",
-                "11111111000111"
-        );
+        Mockito.when(patrocinadorRepository.findById(1L)).thenReturn(Optional.of(existente));
 
-        Mockito.when(patrocinadorRepository.findById(1L))
-                .thenReturn(Optional.of(existente));
+        Mockito.when(patrocinadorRepository.existsByCnpj("11111111000111")).thenReturn(true);
 
-        Mockito.when(patrocinadorRepository.existsByCnpj("11111111000111"))
-                .thenReturn(true);
-
-        Assertions.assertAll(
-                () -> assertThrows(CnpjJaCadastradoException.class, () ->
-                        patrocinadorService.cadastrarPatrocinador(
-                                patrocinadorDTO
-                        )
-                ),
-
-                () -> assertThrows(CnpjJaCadastradoException.class, () ->
-                        patrocinadorService.atualizarPatrocinador(
-                                1L,
-                                patrocinadorAtualizadoDTO
-                        )
-                )
+        assertThrows(CnpjJaCadastradoException.class, () ->
+                patrocinadorService.atualizarPatrocinador(1L, dtoAtualizacao)
         );
 
         Mockito.verify(patrocinadorRepository).findById(1L);
-        Mockito.verify(patrocinadorRepository, Mockito.times(2)).existsByCnpj("11111111000111");
-        Mockito.verifyNoMoreInteractions(usuarioService, patrocinadorRepository);
+        Mockito.verify(patrocinadorRepository).existsByCnpj("11111111000111");
     }
 
     @Test
