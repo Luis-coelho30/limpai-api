@@ -1,7 +1,8 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
 import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
-import br.com.limpai.projeto_limpai.dto.response.perfil.VoluntarioDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioMinDTO;
 import br.com.limpai.projeto_limpai.dto.request.cadastro.VoluntarioCadastroDTO;
 import br.com.limpai.projeto_limpai.exception.user.CpfJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.user.UsuarioNaoEncontradoException;
@@ -28,18 +29,28 @@ public class VoluntarioService {
     }
 
     @Transactional(readOnly = true)
-    public List<VoluntarioDTO> listarVoluntarios() {
+    public List<VoluntarioMinDTO> listarVoluntarios() {
         Iterable<Voluntario> iterable = voluntarioRepository.findAll();
-        List<VoluntarioDTO> lista = new ArrayList<>();
-        iterable.forEach(voluntario -> lista.add(VoluntarioDTO.from(voluntario)));
+        List<VoluntarioMinDTO> lista = new ArrayList<>();
+        iterable.forEach(voluntario -> lista.add(VoluntarioMinDTO.from(voluntario)));
 
         return lista;
     }
 
     @Transactional(readOnly = true)
-    public VoluntarioDTO getVoluntarioById(Long voluntarioId) {
-        return VoluntarioDTO.from(voluntarioRepository.findById(voluntarioId)
+    public VoluntarioMinDTO getVoluntarioPublicoById(Long voluntarioId) {
+        return VoluntarioMinDTO.from(voluntarioRepository.findById(voluntarioId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(voluntarioId)));
+    }
+
+    @Transactional(readOnly = true)
+    public VoluntarioDTO getVoluntarioPrivadoById(Long voluntarioId) {
+        Voluntario voluntario = voluntarioRepository.findById(voluntarioId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(voluntarioId));
+
+        Usuario usuario = usuarioService.getUsuarioPorId(voluntarioId);
+
+        return VoluntarioDTO.from(voluntario, usuario);
     }
 
     @Transactional

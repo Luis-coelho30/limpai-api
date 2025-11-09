@@ -1,6 +1,7 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
-import br.com.limpai.projeto_limpai.dto.response.perfil.PatrocinadorDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.patrocinador.PatrocinadorDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.patrocinador.PatrocinadorMinDTO;
 import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
 import br.com.limpai.projeto_limpai.dto.request.cadastro.PatrocinadorCadastroDTO;
 import br.com.limpai.projeto_limpai.exception.user.CnpjJaCadastradoException;
@@ -53,7 +54,7 @@ public class PatrocinadorServiceTests {
         Mockito.when(patrocinadorRepository.findAll())
                 .thenReturn(patrocinadoresFake);
 
-        List<PatrocinadorDTO> resultado = patrocinadorService.listarPatrocinadores();
+        List<PatrocinadorMinDTO> resultado = patrocinadorService.listarPatrocinadores();
 
         assertAll(
                 () -> assertEquals(2, resultado.size()),
@@ -74,16 +75,32 @@ public class PatrocinadorServiceTests {
         p1.setNomeFantasia("A Fantasia");
         p1.setCnpj("12345678000199");
 
+        Usuario usuario;
+        usuario = new Usuario();
+        usuario.setUsuarioId(1L);
+        usuario.setEmail("teste@email.com");
+        usuario.setTelefone("11 11111-1111");
+        usuario.setSenha("senha123");
+        usuario.setTipoUsuario(UsuarioEnum.PATROCINADOR);
+
         Mockito.when(patrocinadorRepository.findById(1L))
                 .thenReturn(Optional.of(p1));
+
+        Mockito.when(usuarioService.getUsuarioPorId(1L))
+                .thenReturn(usuario);
 
         PatrocinadorDTO patrocinadorDTO = patrocinadorService.getPatrocinadorById(1L);
 
         assertAll(
                 () -> assertEquals("Empresa A", patrocinadorDTO.razaoSocial()),
-                () -> assertEquals("A Fantasia", patrocinadorDTO.nomeFantasia())
+                () -> assertEquals("A Fantasia", patrocinadorDTO.nomeFantasia()),
+                () -> assertEquals("12345678000199", patrocinadorDTO.cnpj()),
+                () -> assertEquals("teste@email.com", patrocinadorDTO.email()),
+                () -> assertEquals("11 11111-1111", patrocinadorDTO.telefone())
         );
 
+        Mockito.verify(patrocinadorRepository).findById(1L);
+        Mockito.verify(usuarioService).getUsuarioPorId(1L);
     }
 
     @Test

@@ -1,7 +1,8 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
 import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
-import br.com.limpai.projeto_limpai.dto.response.perfil.VoluntarioDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioMinDTO;
 import br.com.limpai.projeto_limpai.dto.request.cadastro.VoluntarioCadastroDTO;
 import br.com.limpai.projeto_limpai.exception.user.CpfJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.user.UsuarioNaoEncontradoException;
@@ -55,7 +56,7 @@ public class VoluntarioServiceTests {
         Mockito.when(voluntarioRepository.findAll())
                 .thenReturn(voluntariosFake);
 
-        List<VoluntarioDTO> resultado = voluntarioService.listarVoluntarios();
+        List<VoluntarioMinDTO> resultado = voluntarioService.listarVoluntarios();
 
         assertAll(
                 () -> assertEquals(2, resultado.size()),
@@ -69,7 +70,7 @@ public class VoluntarioServiceTests {
     }
 
     @Test
-    public void deveListarVoluntario() {
+    public void deveListarVoluntarioPublico() {
         Voluntario v1 = new Voluntario();
         v1.setVoluntarioId(1L);
         v1.setNome("Claudio");
@@ -79,11 +80,44 @@ public class VoluntarioServiceTests {
         Mockito.when(voluntarioRepository.findById(1L))
                 .thenReturn(Optional.of(v1));
 
-        VoluntarioDTO voluntarioDTO = voluntarioService.getVoluntarioById(1L);
+        VoluntarioMinDTO voluntarioMinDTO = voluntarioService.getVoluntarioPublicoById(1L);
+
+        assertAll(
+                () -> assertEquals("Claudio", voluntarioMinDTO.nome()),
+                () -> assertEquals(LocalDate.now(), voluntarioMinDTO.dataNascimento())
+        );
+    }
+
+    @Test
+    public void deveListarVoluntarioPrivado() {
+        Voluntario v1 = new Voluntario();
+        v1.setVoluntarioId(1L);
+        v1.setNome("Claudio");
+        v1.setCpf("111.111.111-11");
+        v1.setDataNascimento(LocalDate.now());
+
+        Usuario usuario;
+        usuario = new Usuario();
+        usuario.setUsuarioId(1L);
+        usuario.setEmail("teste@email.com");
+        usuario.setSenha("senha123");
+        usuario.setTelefone("11 11111-1111");
+        usuario.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+
+        Mockito.when(voluntarioRepository.findById(1L))
+                .thenReturn(Optional.of(v1));
+
+        Mockito.when(usuarioService.getUsuarioPorId(1L))
+                .thenReturn(usuario);
+
+        VoluntarioDTO voluntarioDTO = voluntarioService.getVoluntarioPrivadoById(1L);
 
         assertAll(
                 () -> assertEquals("Claudio", voluntarioDTO.nome()),
-                () -> assertEquals(LocalDate.now(), voluntarioDTO.dataNascimento())
+                () -> assertEquals(LocalDate.now(), voluntarioDTO.dataNascimento()),
+                () -> assertEquals("111.111.111-11", voluntarioDTO.cpf()),
+                () -> assertEquals("teste@email.com", voluntarioDTO.email()),
+                () -> assertEquals("11 11111-1111", voluntarioDTO.telefone())
         );
     }
 
@@ -248,7 +282,7 @@ public class VoluntarioServiceTests {
                 .thenReturn(Optional.empty());
 
         assertThrows(UsuarioNaoEncontradoException.class,
-                () -> voluntarioService.getVoluntarioById(1L)
+                () -> voluntarioService.getVoluntarioPublicoById(1L)
         );
 
         Mockito.verify(voluntarioRepository).findById(1L);

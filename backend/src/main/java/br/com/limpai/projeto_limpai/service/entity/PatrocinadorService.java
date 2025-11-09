@@ -1,6 +1,7 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
-import br.com.limpai.projeto_limpai.dto.response.perfil.PatrocinadorDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.patrocinador.PatrocinadorDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.patrocinador.PatrocinadorMinDTO;
 import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
 import br.com.limpai.projeto_limpai.dto.request.cadastro.PatrocinadorCadastroDTO;
 import br.com.limpai.projeto_limpai.exception.user.CnpjJaCadastradoException;
@@ -28,18 +29,22 @@ public class PatrocinadorService {
     }
 
     @Transactional(readOnly = true)
-    public List<PatrocinadorDTO> listarPatrocinadores() {
+    public List<PatrocinadorMinDTO> listarPatrocinadores() {
         Iterable<Patrocinador> iterable = patrocinadorRepository.findAll();
-        List<PatrocinadorDTO> lista = new ArrayList<>();
-        iterable.forEach(patrocinador -> lista.add(PatrocinadorDTO.from(patrocinador)));
+        List<PatrocinadorMinDTO> lista = new ArrayList<>();
+        iterable.forEach(patrocinador -> lista.add(PatrocinadorMinDTO.from(patrocinador)));
 
         return lista;
     }
 
     @Transactional(readOnly = true)
     public PatrocinadorDTO getPatrocinadorById(Long patrocinadorId) {
-        return PatrocinadorDTO.from(patrocinadorRepository.findById(patrocinadorId)
-                .orElseThrow(() -> new UsuarioNaoEncontradoException(patrocinadorId)));
+        Patrocinador patrocinador = patrocinadorRepository.findById(patrocinadorId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(patrocinadorId));
+
+        Usuario usuario = usuarioService.getUsuarioPorId(patrocinadorId);
+
+        return PatrocinadorDTO.from(patrocinador, usuario);
     }
 
     @Transactional
