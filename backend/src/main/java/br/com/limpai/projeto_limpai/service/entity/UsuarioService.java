@@ -73,7 +73,9 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
 
-        usuario.setEmail(email);
+        if(email != null && !email.isEmpty()) {
+            usuario.setEmail(email);
+        }
 
         return usuarioRepository.save(usuario);
     }
@@ -85,6 +87,18 @@ public class UsuarioService {
 
         if (senha != null && !senha.isEmpty() && !encoder.matches(senha, usuario.getSenha())) {
             usuario.setSenha(encoder.encode(senha));
+        }
+
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario atualizarTelefone(Long usuarioId, String telefone) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
+
+        if (telefone != null && !telefone.isEmpty()) {
+            usuario.setTelefone(telefone);
         }
 
         return usuarioRepository.save(usuario);

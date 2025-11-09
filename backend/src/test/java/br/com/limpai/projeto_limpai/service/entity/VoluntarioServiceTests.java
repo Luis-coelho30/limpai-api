@@ -1,6 +1,7 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
 import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
+import br.com.limpai.projeto_limpai.dto.request.voluntario.AtualizarVoluntarioRequestDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioMinDTO;
 import br.com.limpai.projeto_limpai.dto.request.cadastro.VoluntarioCadastroDTO;
@@ -213,6 +214,43 @@ public class VoluntarioServiceTests {
                 "senha123",
                 "11 55555-1111",
                 UsuarioEnum.VOLUNTARIO);
+
+        Mockito.verify(voluntarioRepository).save(Mockito.any(Voluntario.class));
+    }
+
+    @Test
+    public void deveAtualizarVoluntarioParcialmente() {
+        AtualizarVoluntarioRequestDTO voluntarioRequestDTO = new AtualizarVoluntarioRequestDTO(
+                "Joao",
+                "11 55555-1111",
+                null,
+                null
+        );
+
+        LocalDate data = LocalDate.now();
+
+        Mockito.when(voluntarioRepository.findById(1L))
+                .thenReturn(Optional.of(new Voluntario(1L,"Claudio", "111.111.111-11", data)));
+
+        Mockito.when(usuarioService.
+                        atualizarTelefone(1L, "11 55555-1111"))
+                .thenReturn(new Usuario(1L,"novoteste@empresa.com", "senha123", "11 55555-1111", UsuarioEnum.VOLUNTARIO));
+
+        Mockito.when(voluntarioRepository.save(Mockito.any(Voluntario.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        VoluntarioDTO voluntarioDTO = voluntarioService.
+                atualizarParcial(1L, voluntarioRequestDTO);
+
+        assertAll(
+                () -> assertEquals("Joao", voluntarioDTO.nome()),
+                () -> assertEquals("11 55555-1111", voluntarioDTO.telefone()),
+                () -> assertEquals(data, voluntarioDTO.dataNascimento())
+        );
+
+        Mockito.verify(voluntarioRepository).findById(1L);
+
+        Mockito.verify(usuarioService).atualizarTelefone(1L, "11 55555-1111");
 
         Mockito.verify(voluntarioRepository).save(Mockito.any(Voluntario.class));
     }

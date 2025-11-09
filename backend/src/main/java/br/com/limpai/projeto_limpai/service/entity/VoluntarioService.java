@@ -1,6 +1,7 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
 import br.com.limpai.projeto_limpai.dto.internal.RegistroDTO;
+import br.com.limpai.projeto_limpai.dto.request.voluntario.AtualizarVoluntarioRequestDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.voluntario.VoluntarioMinDTO;
 import br.com.limpai.projeto_limpai.dto.request.cadastro.VoluntarioCadastroDTO;
@@ -85,7 +86,7 @@ public class VoluntarioService {
         Voluntario voluntario = voluntarioRepository.findById(voluntarioId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(voluntarioId));
 
-        if (!voluntario.getCpf().equals(voluntarioDTO.cpf()) && voluntarioRepository.existsByCpf(voluntarioDTO.cpf())) {
+        if (verificarCpfJaExiste(voluntario.getCpf(), voluntarioDTO.cpf())) {
             throw new CpfJaCadastradoException(voluntarioDTO.cpf());
         }
 
@@ -114,6 +115,40 @@ public class VoluntarioService {
     }
 
     @Transactional
+    public VoluntarioDTO atualizarParcial(Long id, AtualizarVoluntarioRequestDTO voluntarioRequestDTO) {
+        Voluntario voluntario = voluntarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(id));
+
+        if (voluntarioRequestDTO.nome() != null && !voluntarioRequestDTO.nome().isBlank()) {
+            voluntario.setNome(voluntarioRequestDTO.nome());
+        }
+
+        if (voluntarioRequestDTO.dataNascimento() != null) {
+            voluntario.setDataNascimento(voluntarioRequestDTO.dataNascimento());
+        }
+
+        if (voluntarioRequestDTO.cpf() != null && !voluntarioRequestDTO.cpf().isBlank()) {
+            if (verificarCpfJaExiste(voluntario.getCpf(), voluntarioRequestDTO.cpf())) {
+                throw new CpfJaCadastradoException(voluntarioRequestDTO.cpf());
+            }
+
+            voluntario.setNome(voluntarioRequestDTO.cpf());
+        }
+
+        Usuario usuario;
+
+        if (voluntarioRequestDTO.telefone() != null && !voluntarioRequestDTO.telefone().isBlank()) {
+            usuario = usuarioService.atualizarTelefone(voluntario.getVoluntarioId(), voluntarioRequestDTO.telefone());
+        } else {
+            usuario = usuarioService.getUsuarioPorId(id);
+        }
+
+        voluntarioRepository.save(voluntario);
+
+        return VoluntarioDTO.from(voluntario, usuario);
+    }
+
+    @Transactional
     public void apagarVoluntario(Long voluntarioId) {
         Optional<Voluntario> voluntarioOpt = voluntarioRepository.findById(voluntarioId);
 
@@ -124,4 +159,9 @@ public class VoluntarioService {
         voluntarioRepository.delete(voluntarioOpt.get());
         usuarioService.apagarUsuario(voluntarioId);
     }
+
+    private boolean verificarCpfJaExiste(String cpf, String cpfNovo) {
+        return cpf.equals(cpfNovo) && voluntarioRepository.existsByCpf(cpfNovo);
+    }
+
 }
