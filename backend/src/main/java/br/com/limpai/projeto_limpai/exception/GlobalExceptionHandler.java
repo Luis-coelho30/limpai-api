@@ -3,6 +3,7 @@ package br.com.limpai.projeto_limpai.exception;
 import br.com.limpai.projeto_limpai.exception.campanha.DataInvalidaException;
 import br.com.limpai.projeto_limpai.exception.campanha.UsuarioJaEstaInscritoException;
 import br.com.limpai.projeto_limpai.exception.campanha.UsuarioNaoEstaInscritoException;
+import br.com.limpai.projeto_limpai.exception.geography.CidadeNaoEncontradaException;
 import br.com.limpai.projeto_limpai.exception.geography.LocalJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoException;
 import br.com.limpai.projeto_limpai.exception.security.JwtParsingException;
@@ -60,6 +61,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(LocalNaoEncontradoException.class)
     public ResponseEntity<String> handleLocalNaoEncontrado(LocalNaoEncontradoException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND) // 404
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CidadeNaoEncontradaException.class)
+    public ResponseEntity<String> handleCidadeNaoEncontrada(CidadeNaoEncontradaException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND) // 404
                 .body(ex.getMessage());

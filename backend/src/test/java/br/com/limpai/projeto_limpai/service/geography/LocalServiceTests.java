@@ -1,21 +1,31 @@
 package br.com.limpai.projeto_limpai.service.geography;
 
+import br.com.limpai.projeto_limpai.dto.request.cadastro.LocalRequestDTO;
+import br.com.limpai.projeto_limpai.dto.response.local.LocalResponseDTO;
+import br.com.limpai.projeto_limpai.exception.geography.CidadeNaoEncontradaException;
 import br.com.limpai.projeto_limpai.exception.geography.LocalJaCadastradoException;
 import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.geography.Local;
+import br.com.limpai.projeto_limpai.repository.geography.CidadeRepository;
 import br.com.limpai.projeto_limpai.repository.geography.LocalRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class LocalServiceTests {
@@ -23,191 +33,165 @@ public class LocalServiceTests {
     @Mock
     private LocalRepository localRepository;
 
+    @Mock
+    private CidadeRepository cidadeRepository;
+
     @InjectMocks
     private LocalService localService;
 
-    @Test
-    public void deveListarLocais() {
-        Local l1 = new Local();
-        l1.setLocalId(1L);
-        l1.setNome("Praia Cristal");
-        l1.setEndereco("Rua X");
-        l1.setCep("11111111");
-        l1.setCidadeId(1L);
+    private final Long LOCAL_ID = 1L;
+    private final Long CIDADE_ID = 10L;
+    private final LocalRequestDTO REQUEST_DTO = new LocalRequestDTO("Parque", "Rua A", "12345678", CIDADE_ID);
+    private final LocalResponseDTO VIEW_COMPLETA = new LocalResponseDTO(
+            LOCAL_ID, "Parque", "Rua A", "12345678", CIDADE_ID, "São Paulo", "SP"
+    );
+    private final Local ENTIDADE_LOCAL = new Local(LOCAL_ID, "Parque", "Rua A", "12345678", CIDADE_ID);
 
-        Local l2 = new Local();
-        l2.setLocalId(2L);
-        l2.setNome("Praia Suja");
-        l2.setEndereco("Rua Y");
-        l2.setCep("11111112");
-        l2.setCidadeId(2L);
+    @Nested
+    @DisplayName("Listar Locais")
+    class ListarLocais {
 
-        List<Local> locaisFake = List.of(l1, l2);
+        @Test
+        @DisplayName("Deve listar todos os locais quando sem filtro")
+        void deveListarTodosSemFiltro() {
+            Pageable pageable = PageRequest.of(0, 10);
+            when(localRepository.findAllLocal(pageable)).thenReturn(List.of(VIEW_COMPLETA));
+            when(localRepository.count()).thenReturn(1L);
 
-        Mockito.when(localRepository.findAll())
-                .thenReturn(locaisFake);
+            Page<LocalResponseDTO> resultado = localService.listarLocais(null, pageable);
 
-        List<Local> resultado = localService.listarLocais();
+            assertEquals(1, resultado.getTotalElements());
+            assertEquals("Parque", resultado.getContent().getFirst().nome());
+            verify(localRepository).findAllLocal(pageable);
+            verify(localRepository, never()).findLocalByCidade(any(), any());
+        }
 
-        assertAll(
-                () -> assertEquals(2, resultado.size()),
+        @Test
+        @DisplayName("Deve listar filtrando por cidade quando filtro presente")
+        void deveListarComFiltroCidade() {
+            Pageable pageable = PageRequest.of(0, 10);
+            when(localRepository.findLocalByCidade(CIDADE_ID, pageable)).thenReturn(List.of(VIEW_COMPLETA));
+            when(localRepository.countByCidadeId(CIDADE_ID)).thenReturn(1L);
 
-                () -> assertEquals(1L, resultado.getFirst().getLocalId()),
-                () -> assertEquals("Praia Cristal", resultado.getFirst().getNome()),
-                () -> assertEquals("Rua X", resultado.getFirst().getEndereco()),
-                () -> assertEquals("11111111", resultado.getFirst().getCep()),
-                () -> assertEquals(1L, resultado.getFirst().getCidadeId()),
+            Page<LocalResponseDTO> resultado = localService.listarLocais(CIDADE_ID, pageable);
 
-                () -> assertEquals(2L, resultado.get(1).getLocalId()),
-                () -> assertEquals("Praia Suja", resultado.get(1).getNome()),
-                () -> assertEquals("Rua Y", resultado.get(1).getEndereco()),
-                () -> assertEquals("11111112", resultado.get(1).getCep()),
-                () -> assertEquals(2L, resultado.get(1).getCidadeId())
-        );
+            assertEquals(1, resultado.getTotalElements());
+            verify(localRepository).findLocalByCidade(CIDADE_ID, pageable);
+            verify(localRepository, never()).findAllLocal(any());
+        }
     }
 
-    @Test
-    public void deveListarLocalPorId() {
-        Local p1 = new Local();
-        p1.setLocalId(1L);
-        p1.setNome("Praia Cristal");
-        p1.setEndereco("Rua X");
-        p1.setCep("11111111");
-        p1.setCidadeId(1L);
+    @Nested
+    @DisplayName("Buscar por ID")
+    class BuscarPorId {
 
-        Mockito.when(localRepository.findById(1L))
-                .thenReturn(Optional.of(p1));
+        @Test
+        @DisplayName("Deve retornar DTO quando encontrado")
+        void deveRetornarDtoQuandoEncontrado() {
+            when(localRepository.findLocalById(LOCAL_ID)).thenReturn(Optional.of(VIEW_COMPLETA));
 
-        Local local = localService.getLocalById(1L);
+            LocalResponseDTO resultado = localService.buscarPorId(LOCAL_ID);
 
-        assertAll(
-                () -> assertEquals(1L, local.getLocalId()),
-                () -> assertEquals("Praia Cristal", local.getNome()),
-                () -> assertEquals("Rua X", local.getEndereco()),
-                () -> assertEquals("11111111", local.getCep()),
-                () -> assertEquals(1L, local.getCidadeId())
-        );
+            assertNotNull(resultado);
+            assertEquals(LOCAL_ID, resultado.id());
+            assertEquals("São Paulo", resultado.cidadeNome());
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção quando não encontrado")
+        void deveLancarExcecaoQuandoNaoEncontrado() {
+            when(localRepository.findLocalById(LOCAL_ID)).thenReturn(Optional.empty());
+
+            assertThrows(LocalNaoEncontradoException.class, () -> localService.buscarPorId(LOCAL_ID));
+        }
     }
 
-    @Test
-    public void deveRetornarTrueSeLocalExistir() {
-        Mockito.when(localRepository.existsById(1L))
-                .thenReturn(true);
+    @Nested
+    @DisplayName("Criar Local")
+    class CriarLocal {
 
-        assertTrue(localService.verificarLocalById(1L));
+        @Test
+        @DisplayName("Deve criar local com sucesso")
+        void deveCriarLocalComSucesso() {
+            when(cidadeRepository.existsById(CIDADE_ID)).thenReturn(true);
+            when(localRepository.existsByCepAndEndereco(any(), any())).thenReturn(false);
+            when(localRepository.save(any(Local.class))).thenReturn(ENTIDADE_LOCAL);
+            when(localRepository.findLocalById(LOCAL_ID)).thenReturn(Optional.of(VIEW_COMPLETA));
 
-        Mockito.verify(localRepository).existsById(1L);
+            LocalResponseDTO resultado = localService.criarLocal(REQUEST_DTO);
+
+            assertNotNull(resultado);
+            assertEquals(LOCAL_ID, resultado.id());
+            verify(localRepository).save(any(Local.class));
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção se cidade não existir")
+        void deveFalharCidadeInexistente() {
+            when(cidadeRepository.existsById(CIDADE_ID)).thenReturn(false);
+
+            assertThrows(CidadeNaoEncontradaException.class, () -> localService.criarLocal(REQUEST_DTO));
+            verify(localRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção se local já cadastrado")
+        void deveFalharLocalDuplicado() {
+            when(cidadeRepository.existsById(CIDADE_ID)).thenReturn(true);
+            when(localRepository.existsByCepAndEndereco(REQUEST_DTO.cep(), REQUEST_DTO.endereco())).thenReturn(true);
+
+            assertThrows(LocalJaCadastradoException.class, () -> localService.criarLocal(REQUEST_DTO));
+            verify(localRepository, never()).save(any());
+        }
     }
 
-    @Test
-    public void deveCadastrarLocal() {
-        Local localSalvo = new Local();
-        localSalvo.setLocalId(1L);
-        localSalvo.setNome("Praia Cristal");
-        localSalvo.setEndereco("Rua X");
-        localSalvo.setCep("11111111");
-        localSalvo.setCidadeId(1L);
+    @Nested
+    @DisplayName("Atualizar Local")
+    class AtualizarLocal {
 
-        Mockito.when(localRepository.save(Mockito.any(Local.class)))
-                .thenReturn(localSalvo);
+        @Test
+        @DisplayName("Deve atualizar sem validar duplicidade se endereço não mudou")
+        void deveAtualizarSemValidarSeEnderecoIgual() {
+            when(localRepository.findById(LOCAL_ID)).thenReturn(Optional.of(ENTIDADE_LOCAL));
+            when(localRepository.save(any(Local.class))).thenReturn(ENTIDADE_LOCAL);
+            when(localRepository.findLocalById(LOCAL_ID)).thenReturn(Optional.of(VIEW_COMPLETA));
 
-        Local resultado = localService.criarLocal(localSalvo.getNome(), localSalvo.getEndereco(),
-                localSalvo.getCep(),localSalvo.getLocalId());
+            localService.atualizarLocal(LOCAL_ID, REQUEST_DTO);
 
-        assertAll(
-                () -> assertEquals(1L, resultado.getLocalId()),
-                () -> assertEquals("Praia Cristal", resultado.getNome()),
-                () -> assertEquals("Rua X", resultado.getEndereco()),
-                () -> assertEquals("11111111", resultado.getCep()),
-                () -> assertEquals(1L, resultado.getCidadeId())
-        );
+            verify(localRepository, never()).existsByCepAndEndereco(any(), any());
+            verify(localRepository).save(any(Local.class));
+        }
 
-        Mockito.verify(localRepository).save(Mockito.any(Local.class));
+        @Test
+        @DisplayName("Deve validar duplicidade se endereço mudou")
+        void deveValidarSeEnderecoMudou() {
+            Local localAntigo = new Local(LOCAL_ID, "Parque Antigo", "Rua Velha", "00000000", CIDADE_ID);
+            when(localRepository.findById(LOCAL_ID)).thenReturn(Optional.of(localAntigo));
+
+            when(localRepository.existsByCepAndEndereco(REQUEST_DTO.cep(), REQUEST_DTO.endereco())).thenReturn(true);
+
+            assertThrows(LocalJaCadastradoException.class, () -> localService.atualizarLocal(LOCAL_ID, REQUEST_DTO));
+            verify(localRepository, never()).save(any());
+        }
     }
 
-    @Test
-    public void deveAtualizarLocal() {
-        Local localExistente = new Local();
-        localExistente.setLocalId(1L);
-        localExistente.setNome("Praia Cristal");
-        localExistente.setEndereco("Rua X");
-        localExistente.setCep("11111111");
-        localExistente.setCidadeId(1L);
+    @Nested
+    @DisplayName("Apagar Local")
+    class ApagarLocal {
+        @Test
+        @DisplayName("Deve apagar se existir")
+        void deveApagarSeExistir() {
+            when(localRepository.existsById(LOCAL_ID)).thenReturn(true);
+            localService.apagarLocal(LOCAL_ID);
+            verify(localRepository).deleteById(LOCAL_ID);
+        }
 
-        Mockito.when(localRepository.findById(1L))
-                .thenReturn(Optional.of(localExistente));
-
-        Mockito.when(localRepository.save(Mockito.any(Local.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        Local resultado = localService.atualizarLocal(1L, "Praia Suja", "Rua Y", "11111112", 1L);
-
-        assertEquals(1L, resultado.getLocalId());
-        assertEquals("Praia Suja", resultado.getNome());
-        assertEquals("Rua Y", resultado.getEndereco());
-        assertEquals("11111112", resultado.getCep());
-        assertEquals(1L, resultado.getCidadeId());
-
-        Mockito.verify(localRepository).findById(1L);
-        Mockito.verify(localRepository).save(Mockito.any(Local.class));
-    }
-
-    @Test
-    public void deveApagarLocal() {
-        Local localExistente = new Local();
-        localExistente.setLocalId(1L);
-        localExistente.setNome("Praia Cristal");
-        localExistente.setEndereco("Rua X");
-        localExistente.setCep("11111111");
-        localExistente.setCidadeId(1L);
-
-        Mockito.when(localRepository.findById(1L))
-                .thenReturn(Optional.of(localExistente));
-
-        localService.apagarLocal(1L);
-
-        Mockito.verify(localRepository).findById(1L);
-        Mockito.verify(localRepository).delete(localExistente);
-    }
-
-    @Test
-    public void deveLancarExcecaoSeLocalNaoExistir() {
-        Mockito.when(localRepository.findById(1L))
-                .thenReturn(Optional.empty());
-
-        Assertions.assertAll(
-                () -> assertThrows(LocalNaoEncontradoException.class,
-                        () -> localService.getLocalById(1L)
-                ),
-                () -> assertThrows(LocalNaoEncontradoException.class,
-                        () -> localService.atualizarLocal(1L, "Praia Limpa", "Rua X", "11111111", 1L)
-                ),
-                () -> assertThrows(LocalNaoEncontradoException.class,
-                        () -> localService.apagarLocal(1L)
-                )
-        );
-
-        Mockito.verify(localRepository, Mockito.times(3)).findById(1L);
-    }
-
-    @Test
-    public void deveLancarExcecaoSeLocalJaFoiCadastrado() {
-        Mockito.when(localRepository.findById(1L))
-                .thenReturn(Optional.of(new Local(1L, "Praia dos Coqueiros", "Rua X, 123", "11111000", 1L)));
-
-        Mockito.when(localRepository.existsByCepAndEndereco("11111000", "Rua X, 123"))
-                .thenReturn(true);
-
-        Assertions.assertAll(
-                () -> assertThrows(LocalJaCadastradoException.class,
-                        () -> localService.criarLocal("Praia Limpa dos Coqueiros", "Rua X, 123", "11111000", 1L)
-                ),
-                () -> assertThrows(LocalJaCadastradoException.class,
-                        () -> localService.atualizarLocal(1L, "Praia dos Coqueiros", "Rua X, 123", "11111000", 1L)
-                )
-        );
-
-        Mockito.verify(localRepository, Mockito.times(2)).existsByCepAndEndereco("11111000", "Rua X, 123");
-        Mockito.verify(localRepository).findById(1L);
+        @Test
+        @DisplayName("Deve lançar exceção se não existir ao tentar apagar")
+        void deveFalharSeNaoExistir() {
+            when(localRepository.existsById(LOCAL_ID)).thenReturn(false);
+            assertThrows(LocalNaoEncontradoException.class, () -> localService.apagarLocal(LOCAL_ID));
+            verify(localRepository, never()).deleteById(any());
+        }
     }
 }
