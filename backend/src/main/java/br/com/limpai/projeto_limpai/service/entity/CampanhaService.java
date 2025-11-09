@@ -1,22 +1,24 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
 import br.com.limpai.projeto_limpai.dto.request.entity.CriarCampanhaDTO;
-import br.com.limpai.projeto_limpai.dto.response.perfil.CampanhaViewDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaMinDTO;
+import br.com.limpai.projeto_limpai.exception.campanha.CampanhaExpiradaException;
 import br.com.limpai.projeto_limpai.exception.campanha.CampanhaNaoEncontradaException;
+import br.com.limpai.projeto_limpai.exception.campanha.DataInvalidaException;
 import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Campanha;
 import br.com.limpai.projeto_limpai.repository.entity.CampanhaRepository;
 import br.com.limpai.projeto_limpai.repository.join.UsuarioCampanhaRepository;
 import br.com.limpai.projeto_limpai.service.geography.LocalService;
-import br.com.limpai.projeto_limpai.service.join.InscricaoService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,48 +46,74 @@ public class CampanhaService {
     }
 
     @Transactional(readOnly = true)
-    public Campanha getCampanhaById(Long campanhaId) {
-        return campanhaRepository.findById(campanhaId)
+    public CampanhaDTO getCampanhaById(Long campanhaId) {
+        return campanhaRepository.findCampanhaById(campanhaId)
                 .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaId));
     }
 
     @Transactional(readOnly = true)
-    public List<Campanha> listarCampanhas() {
-        return campanhaRepository.findAll();
+    public Page<CampanhaMinDTO> listarMinhasCampanhas(Long patrocinadorId, Pageable pageable) {
+        List<CampanhaMinDTO> campanhas = campanhaRepository.findByPatrocinadorId(patrocinadorId, pageable);
+        long total = campanhaRepository.countByPatrocinadorId(patrocinadorId);
+
+        return new PageImpl<>(campanhas, pageable, total);
     }
 
     @Transactional(readOnly = true)
-    public Page<CampanhaViewDTO> listarCampanhasAtivas(Pageable pageable) {
-        return campanhaRepository.findCampanhasNaoExpiradas(pageable);
+    public Page<CampanhaMinDTO> listarCampanhasAtivas(Pageable pageable) {
+        List<CampanhaMinDTO> campanhas = campanhaRepository.findCampanhasNaoExpiradas(pageable);
+        long total = campanhaRepository.countCampanhasNaoExpiradas();
+
+        return new PageImpl<>(campanhas, pageable, total);
     }
 
     @Transactional(readOnly = true)
-    public Page<CampanhaViewDTO> listarHistoricoCampanhas(Pageable pageable) {
-        return campanhaRepository.findCampanhasExpiradas(pageable);
+    public Page<CampanhaMinDTO> listarHistoricoCampanhas(Pageable pageable) {
+        List<CampanhaMinDTO> campanhas = campanhaRepository.findCampanhasExpiradas(pageable);
+        long total = campanhaRepository.countCampanhasExpiradas();
+
+        return new PageImpl<>(campanhas, pageable, total);
     }
 
     @Transactional(readOnly = true)
-    public Page<CampanhaViewDTO> listarAtivasPorCidade(Long cidadeId, Pageable pageable) {
-        return campanhaRepository.findAtivasByCidade(cidadeId, pageable);
+    public Page<CampanhaMinDTO> listarAtivasPorCidade(Long cidadeId, Pageable pageable) {
+        List<CampanhaMinDTO> campanhas = campanhaRepository.findAtivasByCidade(cidadeId, pageable);
+        long total = campanhaRepository.countAtivasByCidade(cidadeId);
+
+        return new PageImpl<>(campanhas, pageable, total);
     }
 
     @Transactional(readOnly = true)
-    public Page<CampanhaViewDTO> listarExpiradasPorCidade(Long cidadeId, Pageable pageable) {
-        return campanhaRepository.findExpiradasByCidade(cidadeId, pageable);
+    public Page<CampanhaMinDTO> listarExpiradasPorCidade(Long cidadeId, Pageable pageable) {
+        List<CampanhaMinDTO> campanhas = campanhaRepository.findExpiradasByCidade(cidadeId, pageable);
+        long total = campanhaRepository.countExpiradasByCidade(cidadeId);
+
+        return new PageImpl<>(campanhas, pageable, total);
     }
 
     @Transactional(readOnly = true)
-    public Page<CampanhaViewDTO> listarAtivasPorEstado(Long estadoId, Pageable pageable) {
-        return campanhaRepository.findAtivasByEstado(estadoId, pageable);
+    public Page<CampanhaMinDTO> listarAtivasPorEstado(Long estadoId, Pageable pageable) {
+        List<CampanhaMinDTO> campanhas = campanhaRepository.findAtivasByEstado(estadoId, pageable);
+        long total = campanhaRepository.countAtivasByEstado(estadoId);
+
+        return new PageImpl<>(campanhas, pageable, total);
     }
 
     @Transactional(readOnly = true)
-    public Page<CampanhaViewDTO> listarExpiradasPorEstado(Long estadoId, Pageable pageable) {
-        return campanhaRepository.findExpiradasByEstado(estadoId, pageable);
+    public Page<CampanhaMinDTO> listarExpiradasPorEstado(Long estadoId, Pageable pageable) {
+        List<CampanhaMinDTO> campanhas = campanhaRepository.findExpiradasByEstado(estadoId, pageable);
+        long total = campanhaRepository.countExpiradasByEstado(estadoId);
+
+        return new PageImpl<>(campanhas, pageable, total);
     }
 
     @Transactional
-    public Campanha criarCampanha(Long donoId, CriarCampanhaDTO campanhaDTO) {
+    public void registrarDoacao(Long campanhaId, BigDecimal valor) {
+        campanhaRepository.adicionarFundos(campanhaId, valor);
+    }
+
+    @Transactional
+    public CampanhaDTO criarCampanha(Long donoId, CriarCampanhaDTO campanhaDTO) {
         if(!localService.verificarLocalById(campanhaDTO.localId())) {
             throw new LocalNaoEncontradoException(campanhaDTO.localId());
         }
@@ -99,11 +127,44 @@ public class CampanhaService {
         campanhaSalva.setPatrocinadorId(donoId);
         campanhaSalva.setLocalId(campanhaDTO.localId());
 
-        return campanhaRepository.save(campanhaSalva);
+        Campanha novaCampanha = campanhaRepository.save(campanhaSalva);
+
+        return campanhaRepository.findCampanhaById(novaCampanha.getCampanhaId())
+                .orElseThrow(() -> new CampanhaNaoEncontradaException(novaCampanha.getCampanhaId()));
     }
 
     @Transactional
-    public Campanha atualizarCampanha(Long campanhaId, CriarCampanhaDTO campanhaDTO) {
+    public CampanhaDTO encerrarCampanha(Long campanhaId) {
+        Campanha campanha = campanhaRepository.findById(campanhaId)
+                .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaId));
+
+        if (campanha.getDataFim().isBefore(LocalDateTime.now())) {
+            throw new CampanhaExpiradaException(campanhaId);
+        }
+
+        campanha.setDataFim(LocalDateTime.now());
+        campanhaRepository.save(campanha);
+
+        return getCampanhaById(campanhaId);
+    }
+
+    @Transactional
+    public CampanhaDTO estenderPrazo(Long campanhaId, LocalDateTime novaDataFim) {
+        Campanha campanha = campanhaRepository.findById(campanhaId)
+                .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaId));
+
+        if (novaDataFim.isBefore(LocalDateTime.now()) || novaDataFim.isBefore(campanha.getDataFim())) {
+            throw new DataInvalidaException("A nova data deve ser posterior à data de encerramento atual.");
+        }
+
+        campanha.setDataFim(novaDataFim);
+        campanhaRepository.save(campanha);
+
+        return getCampanhaById(campanhaId);
+    }
+
+    @Transactional
+    public CampanhaDTO atualizarCampanha(Long campanhaId, CriarCampanhaDTO campanhaDTO) {
         Campanha campanha = campanhaRepository.findById(campanhaId)
                 .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaId));
 
@@ -120,7 +181,10 @@ public class CampanhaService {
         campanha.setDataFim(campanhaDTO.dataFim());
         campanha.setLocalId(campanhaDTO.localId());
 
-        return campanhaRepository.save(campanha);
+        Campanha campanhaAtualizada = campanhaRepository.save(campanha);
+
+        return campanhaRepository.findCampanhaById(campanhaAtualizada.getCampanhaId())
+                .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaAtualizada.getCampanhaId()));
     }
 
     @Transactional
