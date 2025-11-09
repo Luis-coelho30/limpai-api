@@ -27,14 +27,16 @@ public class Campanha {
     private BigDecimal metaFundos = BigDecimal.ZERO;
     @Column("fundos_arrecadados")
     private BigDecimal fundosArrecadados = BigDecimal.ZERO;
+    @Column("patrocinador_id")
+    private Long patrocinadorId;
     @Column("local_id")
     private Long localId;
 
     public Campanha() {
     }
 
-    public Campanha(Long campanhaId, String nome, String descricao, LocalDateTime dataInicio, LocalDateTime dataFim,
-                    BigDecimal metaFundos, BigDecimal fundosArrecadados, Long localId) {
+    public Campanha(Long campanhaId, String nome, String descricao, LocalDateTime dataInicio,
+                    LocalDateTime dataFim, BigDecimal metaFundos, BigDecimal fundosArrecadados, Long patrocinadorId, Long localId) {
         this.campanhaId = campanhaId;
         this.nome = nome;
         this.descricao = descricao;
@@ -42,6 +44,7 @@ public class Campanha {
         this.dataFim = dataFim;
         this.metaFundos = metaFundos;
         this.fundosArrecadados = fundosArrecadados;
+        this.patrocinadorId = patrocinadorId;
         this.localId = localId;
     }
 
@@ -99,6 +102,14 @@ public class Campanha {
 
     public void setFundosArrecadados(BigDecimal fundosArrecadados) {
         this.fundosArrecadados = fundosArrecadados;
+    }
+
+    public Long getPatrocinadorId() {
+        return patrocinadorId;
+    }
+
+    public void setPatrocinadorId(Long patrocinadorId) {
+        this.patrocinadorId = patrocinadorId;
     }
 
     public Long getLocalId() {

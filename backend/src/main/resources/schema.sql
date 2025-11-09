@@ -69,7 +69,9 @@ CREATE TABLE "campanha" (
     "meta_fundos" DECIMAL(10,2) DEFAULT 0.00,
     "fundos_arrecadados" DECIMAL(10,2) DEFAULT 0.00,
     "local_id" BIGINT NOT NULL,
+    "patrocinador_id" BIGINT NOT NULL,
     FOREIGN KEY ("local_id") REFERENCES "local"("local_id")
+    FOREIGN KEY ("patrocinador_id") REFERENCES "patrocinador"("usuario_id")
 );
 
 -- Tabela usuario_campanha

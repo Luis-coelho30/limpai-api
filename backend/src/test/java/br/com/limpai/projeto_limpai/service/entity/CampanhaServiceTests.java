@@ -1,5 +1,6 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
+import br.com.limpai.projeto_limpai.dto.request.entity.CriarCampanhaDTO;
 import br.com.limpai.projeto_limpai.exception.campanha.CampanhaNaoEncontradaException;
 import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Campanha;
@@ -129,6 +130,9 @@ public class CampanhaServiceTests {
 
     @Test
     public void deveCadastrarCampanha() {
+        CriarCampanhaDTO campanhaDTO = new CriarCampanhaDTO("Limpeza da Praia Cristal", "Bora limpar!", LocalDateTime.MIN,
+                LocalDateTime.MAX, BigDecimal.ZERO, 1L);
+
         Campanha campanhaSalva = new Campanha();
         campanhaSalva.setCampanhaId(1L);
         campanhaSalva.setNome("Limpeza da Praia Cristal");
@@ -143,8 +147,7 @@ public class CampanhaServiceTests {
         Mockito.when(localService.verificarLocalById(1L))
                 .thenReturn(true);
 
-        Campanha resultado = campanhaService.criarCampanha(campanhaSalva.getNome(), campanhaSalva.getDescricao(), BigDecimal.ZERO,
-                campanhaSalva.getDataInicio(), campanhaSalva.getDataFim(), campanhaSalva.getLocalId());
+        Campanha resultado = campanhaService.criarCampanha(2L, campanhaDTO);
 
         assertAll(
                 () -> assertEquals(1L, resultado.getCampanhaId()),
@@ -161,6 +164,9 @@ public class CampanhaServiceTests {
 
     @Test
     public void deveAtualizarCampanha() {
+        CriarCampanhaDTO campanhaDTO = new CriarCampanhaDTO("Lixo na Praia Cristal", "Bora sujar!", LocalDateTime.MAX,
+                LocalDateTime.MIN, BigDecimal.TEN, 1L);
+
         Campanha campanhaExistente = new Campanha();
         campanhaExistente.setCampanhaId(1L);
         campanhaExistente.setNome("Limpeza da Praia Cristal");
@@ -175,8 +181,7 @@ public class CampanhaServiceTests {
         Mockito.when(campanhaRepository.save(Mockito.any(Campanha.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Campanha resultado = campanhaService.atualizarCampanha(1L, "Lixo na Praia Cristal", "Bora sujar!", BigDecimal.TEN,
-                                                                LocalDateTime.MAX, LocalDateTime.MIN, 1L);
+        Campanha resultado = campanhaService.atualizarCampanha(1L, campanhaDTO);
 
         assertAll(
                 () -> assertEquals(1L, resultado.getCampanhaId()),
@@ -217,6 +222,9 @@ public class CampanhaServiceTests {
 
     @Test
     public void deveLancarExcecaoSeCampanhaNaoExistir() {
+        CriarCampanhaDTO campanhaDTO = new CriarCampanhaDTO("Limpeza da Praia Cristal", "Bora limpar!", LocalDateTime.MIN,
+                LocalDateTime.MAX, BigDecimal.ZERO, 1L);
+
         Mockito.when(campanhaRepository.findById(1L))
                 .thenReturn(Optional.empty());
 
@@ -225,8 +233,7 @@ public class CampanhaServiceTests {
                         () -> campanhaService.getCampanhaById(1L)
                 ),
                 () -> assertThrows(CampanhaNaoEncontradaException.class,
-                        () -> campanhaService.atualizarCampanha(1L, "Lixo na Praia Cristal", "Bora sujar!", BigDecimal.TEN,
-                                LocalDateTime.MAX, LocalDateTime.MIN, 1L)
+                        () -> campanhaService.atualizarCampanha(1L, campanhaDTO)
                 ),
                 () -> assertThrows(CampanhaNaoEncontradaException.class,
                         () -> campanhaService.apagarCampanha(1L)
@@ -238,6 +245,9 @@ public class CampanhaServiceTests {
 
     @Test
     public void deveLancarExcecaoSeLocalNaoExistir() {
+        CriarCampanhaDTO campanhaDTO = new CriarCampanhaDTO("Limpeza da Praia Cristal", "Bora limpar!", LocalDateTime.MIN,
+                LocalDateTime.MAX, BigDecimal.ZERO, 1L);
+
         Campanha campanhaExistente = new Campanha();
         campanhaExistente.setCampanhaId(1L);
 
@@ -248,13 +258,11 @@ public class CampanhaServiceTests {
                 .thenReturn(false);
 
         assertThrows(LocalNaoEncontradoException.class, () ->
-                campanhaService.criarCampanha("Limpeza na Praia Cristal", "Bora Limpar!",
-                        BigDecimal.ZERO, LocalDateTime.MIN, LocalDateTime.MAX, 1L)
+                campanhaService.criarCampanha(2L, campanhaDTO)
         );
 
         assertThrows(LocalNaoEncontradoException.class, () ->
-                campanhaService.atualizarCampanha(1L, "Lixo na Praia Cristal", "Bora sujar!",
-                        BigDecimal.TEN, LocalDateTime.MAX, LocalDateTime.MIN, 1L)
+                campanhaService.atualizarCampanha(1L, campanhaDTO)
         );
 
         Mockito.verify(campanhaRepository, Mockito.times(1)).findById(1L);
