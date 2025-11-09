@@ -37,7 +37,7 @@ public class PatrocinadorRepositoryTests {
         u.setEmail("empresa@teste.com");
         u.setSenha("123");
         u.setTelefone("11 99999-9999");
-        u.setTipoUsuario(UsuarioEnum.PATROCINADOR);
+        u.setTipo(UsuarioEnum.PATROCINADOR);
         usuarioRepository.save(u);
 
         patrocinadorRepository.insertPatrocinador(u.getUsuarioId(), "Empresa Teste Ltda", "Empresa Teste", "12345678000199");
@@ -54,7 +54,7 @@ public class PatrocinadorRepositoryTests {
         assertTrue(patrocinador.isPresent());
 
         patrocinadorSalvo = patrocinador.get();
-        System.out.println(patrocinadorSalvo.getPatrocinadorId());
+        System.out.println(patrocinadorSalvo.getUsuarioId());
         System.out.println(patrocinadorSalvo.getCnpj());
         System.out.println(patrocinadorSalvo.getNomeFantasia());
         System.out.println(patrocinadorSalvo.getRazaoSocial());

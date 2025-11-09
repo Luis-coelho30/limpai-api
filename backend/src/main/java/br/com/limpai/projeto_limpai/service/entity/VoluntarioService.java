@@ -108,7 +108,7 @@ public class VoluntarioService {
         voluntarioRepository.save(voluntario);
 
         return new RegistroDTO(
-                voluntario.getVoluntarioId(),
+                voluntario.getUsuarioId(),
                 voluntario.getNome(),
                 usuarioAtualizado
         );
@@ -138,7 +138,7 @@ public class VoluntarioService {
         Usuario usuario;
 
         if (voluntarioRequestDTO.telefone() != null && !voluntarioRequestDTO.telefone().isBlank()) {
-            usuario = usuarioService.atualizarTelefone(voluntario.getVoluntarioId(), voluntarioRequestDTO.telefone());
+            usuario = usuarioService.atualizarTelefone(voluntario.getUsuarioId(), voluntarioRequestDTO.telefone());
         } else {
             usuario = usuarioService.getUsuarioPorId(id);
         }

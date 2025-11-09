@@ -1,9 +1,9 @@
-package br.com.limpai.projeto_limpai.dto.response.perfil;
+package br.com.limpai.projeto_limpai.dto.response.perfil.campanha;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record CampanhaViewDTO(
+public record CampanhaDTO(
         String nome,
         String descricao,
         LocalDateTime dataInicio,
@@ -15,5 +15,6 @@ public record CampanhaViewDTO(
         String endereco,
         String cep,
         String cidadeNome,
-        String estadoSigla)
+        String estadoSigla
+)
 { }

@@ -21,8 +21,8 @@ public class UsuarioCampanhaRepository {
     public boolean existsByUsuarioAndCampanha(Long usuarioId, Long campanhaId) {
         String sql = """
         SELECT COUNT(*)
-        FROM "usuario_campanha"
-        WHERE "usuario_id" = ? AND "campanha_id" = ?
+        FROM usuario_campanha
+        WHERE usuario_id = ? AND campanha_id = ?
     """;
 
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, usuarioId, campanhaId);
@@ -32,8 +32,8 @@ public class UsuarioCampanhaRepository {
     public List<UsuarioCampanha> findAllByUsuario(Long usuarioId) {
         String sql = """
         SELECT *
-        FROM "usuario_campanha"
-        WHERE "usuario_id" = ?
+        FROM usuario_campanha
+        WHERE usuario_id = ?
     """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -48,8 +48,8 @@ public class UsuarioCampanhaRepository {
     public List<UsuarioCampanha> findAllByCampanha(Long campanhaId) {
         String sql = """
         SELECT *
-        FROM "usuario_campanha"
-        WHERE "campanha_id" = ?
+        FROM usuario_campanha
+        WHERE campanha_id = ?
     """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -63,7 +63,7 @@ public class UsuarioCampanhaRepository {
 
     public void inscrever(UsuarioCampanha usuarioCampanha) {
         String sql = """
-            INSERT INTO "usuario_campanha" ("usuario_id", "campanha_id", "data_inscricao")
+            INSERT INTO usuario_campanha (usuario_id, campanha_id, data_inscricao)
             VALUES (?, ?, ?)
         """;
         jdbcTemplate.update(sql, usuarioCampanha.getUsuarioId(), usuarioCampanha.getCampanhaId(), Timestamp.valueOf(usuarioCampanha.getDataInscricao()));
@@ -71,8 +71,8 @@ public class UsuarioCampanhaRepository {
 
     public int contarInscricoesByUsuarioId(Long usuario_id) {
         String sql = """
-            SELECT COUNT("usuario_id") FROM "usuario_campanha"
-            WHERE "usuario_id" = ?
+            SELECT COUNT(usuario_id) FROM usuario_campanha
+            WHERE usuario_id = ?
         """;
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, usuario_id);
 
@@ -81,8 +81,8 @@ public class UsuarioCampanhaRepository {
 
     public int contarInscricoesByCampanhaId(Long campanhaId) {
         String sql = """
-            SELECT COUNT("campanha_id") FROM "usuario_campanha"
-            WHERE "campanha_id" = ?
+            SELECT COUNT(campanha_id) FROM usuario_campanha
+            WHERE campanha_id = ?
         """;
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, campanhaId);
 
@@ -91,16 +91,16 @@ public class UsuarioCampanhaRepository {
 
     public void removerInscricao(Long usuarioId, Long campanhaId) {
         String sql = """
-            DELETE FROM "usuario_campanha"
-            WHERE "usuario_id" = ? AND "campanha_id" = ?
+            DELETE FROM usuario_campanha
+            WHERE usuario_id = ? AND campanha_id = ?
         """;
         jdbcTemplate.update(sql, usuarioId, campanhaId);
     }
 
     public void removerHistoricoDeInscricoesByCampanha(Long campanhaId) {
         String sql = """
-            DELETE FROM "usuario_campanha"
-            WHERE "campanha_id" = ?
+            DELETE FROM usuario_campanha
+            WHERE campanha_id = ?
         """;
         jdbcTemplate.update(sql, campanhaId);
     }

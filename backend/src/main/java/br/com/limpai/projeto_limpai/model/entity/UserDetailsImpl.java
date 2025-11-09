@@ -17,7 +17,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = "ROLE_" + usuario.getTipoUsuario().name();
+        String role = "ROLE_" + usuario.getTipo().name();
         return List.of(new SimpleGrantedAuthority(role));
     }
 

@@ -1,6 +1,7 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
 import br.com.limpai.projeto_limpai.dto.request.entity.CriarCampanhaDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaDTO;
 import br.com.limpai.projeto_limpai.exception.campanha.CampanhaNaoEncontradaException;
 import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoException;
 import br.com.limpai.projeto_limpai.model.entity.Campanha;
@@ -58,74 +59,35 @@ public class CampanhaServiceTests {
     }
 
     @Test
-    public void deveListarCampanhas() {
-        Campanha c1 = new Campanha();
-        c1.setCampanhaId(1L);
-        c1.setNome("Limpeza da Praia Cristal");
-        c1.setDescricao("Bora limpar!");
-        c1.setDataInicio(LocalDateTime.MIN);
-        c1.setDataFim(LocalDateTime.MAX);
-        c1.setLocalId(1L);
-
-        Campanha c2 = new Campanha();
-        c2.setCampanhaId(2L);
-        c2.setNome("Limpeza da Praia Coral");
-        c2.setDescricao("Bora limpar!");
-        c2.setDataInicio(LocalDateTime.MIN);
-        c2.setDataFim(LocalDateTime.MAX);
-        c2.setLocalId(2L);
-
-        Mockito.when(campanhaRepository.findAll())
-                .thenReturn(List.of(c1, c2));
-
-        List<Campanha> resultado = campanhaService.listarCampanhas();
-
-        assertAll(
-                () -> assertEquals(2, resultado.size()),
-
-                () -> assertEquals(1L, resultado.getFirst().getCampanhaId()),
-                () -> assertEquals("Limpeza da Praia Cristal", resultado.getFirst().getNome()),
-                () -> assertEquals("Bora limpar!", resultado.getFirst().getDescricao()),
-                () -> assertEquals(LocalDateTime.MIN, resultado.getFirst().getDataInicio()),
-                () -> assertEquals(LocalDateTime.MAX, resultado.getFirst().getDataFim()),
-                () -> assertEquals(1L, resultado.getFirst().getLocalId()),
-
-                () -> assertEquals(2L, resultado.get(1).getCampanhaId()),
-                () -> assertEquals("Limpeza da Praia Coral", resultado.get(1).getNome()),
-                () -> assertEquals("Bora limpar!", resultado.get(1).getDescricao()),
-                () -> assertEquals(LocalDateTime.MIN, resultado.get(1).getDataInicio()),
-                () -> assertEquals(LocalDateTime.MAX, resultado.get(1).getDataFim()),
-                () -> assertEquals(2L, resultado.get(1).getLocalId())
-        );
-
-        Mockito.verify(campanhaRepository).findAll();
-    }
-
-    @Test
     public void deveListarCampanhaPorId() {
-        Campanha campanhaSalva = new Campanha();
-        campanhaSalva.setCampanhaId(1L);
-        campanhaSalva.setNome("Limpeza da Praia Cristal");
-        campanhaSalva.setDescricao("Bora limpar!");
-        campanhaSalva.setDataInicio(LocalDateTime.MIN);
-        campanhaSalva.setDataFim(LocalDateTime.MAX);
-        campanhaSalva.setLocalId(1L);
-
-        Mockito.when(campanhaRepository.findById(1L))
-                .thenReturn(Optional.of(campanhaSalva));
-
-        Campanha resultado = campanhaService.getCampanhaById(1L);
-
-        assertAll(
-                () -> assertEquals(1L, resultado.getCampanhaId()),
-                () -> assertEquals("Limpeza da Praia Cristal", resultado.getNome()),
-                () -> assertEquals("Bora limpar!", resultado.getDescricao()),
-                () -> assertEquals(LocalDateTime.MIN, resultado.getDataInicio()),
-                () -> assertEquals(LocalDateTime.MAX, resultado.getDataFim()),
-                () -> assertEquals(1L, resultado.getLocalId())
+        CampanhaDTO campanhaMock = new CampanhaDTO(
+                "Limpeza da Praia Cristal",
+                "Bora limpar!",
+                LocalDateTime.MIN,
+                LocalDateTime.MAX,
+                BigDecimal.ZERO,
+                BigDecimal.TEN,
+                5L,
+                "Praia do Futuro",
+                "Av. Litorânea, 100",
+                "60000-000",
+                "Fortaleza",
+                "CE"
         );
 
-        Mockito.verify(campanhaRepository).findById(1L);
+        Mockito.when(campanhaRepository.findCampanhaById(1L))
+                .thenReturn(Optional.of(campanhaMock));
+
+        CampanhaDTO resultado = campanhaService.getCampanhaById(1L);
+
+        assertAll(
+                () -> assertEquals("Limpeza da Praia Cristal", resultado.nome()),
+                () -> assertEquals("Bora limpar!", resultado.descricao()),
+                () -> assertEquals(5L, resultado.qtdInscritos()),
+                () -> assertEquals("Fortaleza", resultado.cidadeNome())
+        );
+
+        Mockito.verify(campanhaRepository).findCampanhaById(1L);
     }
 
     @Test
@@ -141,21 +103,37 @@ public class CampanhaServiceTests {
         campanhaSalva.setDataFim(LocalDateTime.MAX);
         campanhaSalva.setLocalId(1L);
 
+        CampanhaDTO campanhaMock = new CampanhaDTO(
+                "Limpeza da Praia Cristal",
+                "Bora limpar!",
+                LocalDateTime.MIN,
+                LocalDateTime.MAX,
+                BigDecimal.ZERO,
+                BigDecimal.TEN,
+                5L,
+                "Praia do Futuro",
+                "Av. Litorânea, 100",
+                "60000-000",
+                "Fortaleza",
+                "CE"
+        );
+
         Mockito.when(campanhaRepository.save(Mockito.any(Campanha.class)))
                 .thenReturn(campanhaSalva);
 
         Mockito.when(localService.verificarLocalById(1L))
                 .thenReturn(true);
 
-        Campanha resultado = campanhaService.criarCampanha(2L, campanhaDTO);
+        Mockito.when(campanhaRepository.findCampanhaById(1L)).thenReturn(Optional.of(campanhaMock));
+
+        CampanhaDTO resultado = campanhaService.criarCampanha(2L, campanhaDTO);
 
         assertAll(
-                () -> assertEquals(1L, resultado.getCampanhaId()),
-                () -> assertEquals("Limpeza da Praia Cristal", resultado.getNome()),
-                () -> assertEquals("Bora limpar!", resultado.getDescricao()),
-                () -> assertEquals(LocalDateTime.MIN, resultado.getDataInicio()),
-                () -> assertEquals(LocalDateTime.MAX, resultado.getDataFim()),
-                () -> assertEquals(1L, resultado.getLocalId())
+                () -> assertEquals("Limpeza da Praia Cristal", resultado.nome()),
+                () -> assertEquals("Bora limpar!", resultado.descricao()),
+                () -> assertEquals(LocalDateTime.MIN, resultado.dataInicio()),
+                () -> assertEquals(LocalDateTime.MAX, resultado.dataFim()),
+                () -> assertEquals(BigDecimal.ZERO, resultado.metaFundos())
         );
 
         Mockito.verify(campanhaRepository).save(Mockito.any(Campanha.class));
@@ -175,21 +153,37 @@ public class CampanhaServiceTests {
         campanhaExistente.setDataFim(LocalDateTime.MAX);
         campanhaExistente.setLocalId(1L);
 
+        CampanhaDTO campanhaMock = new CampanhaDTO(
+                "Lixo na Praia Cristal",
+                "Bora sujar!",
+                LocalDateTime.MAX,
+                LocalDateTime.MIN,
+                BigDecimal.TEN,
+                BigDecimal.ZERO,
+                5L,
+                "Praia do Futuro",
+                "Av. Litorânea, 100",
+                "60000-000",
+                "Fortaleza",
+                "CE"
+        );
+
         Mockito.when(campanhaRepository.findById(1L))
                 .thenReturn(Optional.of(campanhaExistente));
 
         Mockito.when(campanhaRepository.save(Mockito.any(Campanha.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Campanha resultado = campanhaService.atualizarCampanha(1L, campanhaDTO);
+        Mockito.when(campanhaRepository.findCampanhaById(1L)).thenReturn(Optional.of(campanhaMock));
+
+        CampanhaDTO resultado = campanhaService.atualizarCampanha(1L, campanhaDTO);
 
         assertAll(
-                () -> assertEquals(1L, resultado.getCampanhaId()),
-                () -> assertEquals("Lixo na Praia Cristal", resultado.getNome()),
-                () -> assertEquals("Bora sujar!", resultado.getDescricao()),
-                () -> assertEquals(LocalDateTime.MAX, resultado.getDataInicio()),
-                () -> assertEquals(LocalDateTime.MIN, resultado.getDataFim()),
-                () -> assertEquals(1L, resultado.getLocalId())
+                () -> assertEquals("Lixo na Praia Cristal", resultado.nome()),
+                () -> assertEquals("Bora sujar!", resultado.descricao()),
+                () -> assertEquals(LocalDateTime.MAX, resultado.dataInicio()),
+                () -> assertEquals(LocalDateTime.MIN, resultado.dataFim()),
+                () -> assertEquals(BigDecimal.TEN, resultado.metaFundos())
         );
 
         Mockito.verify(campanhaRepository).findById(1L);
@@ -228,6 +222,9 @@ public class CampanhaServiceTests {
         Mockito.when(campanhaRepository.findById(1L))
                 .thenReturn(Optional.empty());
 
+        Mockito.when(campanhaRepository.findCampanhaById(1L))
+                .thenReturn(Optional.empty());
+
         Assertions.assertAll(
                 () -> assertThrows(CampanhaNaoEncontradaException.class,
                         () -> campanhaService.getCampanhaById(1L)
@@ -240,7 +237,8 @@ public class CampanhaServiceTests {
                 )
         );
 
-        Mockito.verify(campanhaRepository, Mockito.times(3)).findById(1L);
+        Mockito.verify(campanhaRepository, Mockito.times(2)).findById(1L);
+        Mockito.verify(campanhaRepository).findCampanhaById(1L);
     }
 
     @Test

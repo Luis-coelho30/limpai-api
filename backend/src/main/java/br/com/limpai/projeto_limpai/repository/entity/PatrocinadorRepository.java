@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface PatrocinadorRepository extends CrudRepository<Patrocinador, Long> {
 
     @Modifying
-    @Query("INSERT INTO \"patrocinador\"(\"usuario_id\", \"razao_social\", \"nome_fantasia\", \"cnpj\") " +
+    @Query("INSERT INTO patrocinador(usuario_id, razao_social, nome_fantasia, cnpj) " +
             "VALUES (:usuarioId, :razaoSocial, :nomeFantasia, :cnpj)")
     void insertPatrocinador(@Param("usuarioId") Long usuarioId,
                             @Param("razaoSocial") String razaoSocial,

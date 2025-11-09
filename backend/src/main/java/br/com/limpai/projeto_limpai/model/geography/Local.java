@@ -6,19 +6,13 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Objects;
 
-@Table("local")
 public class Local {
 
     @Id
-    @Column("local_id")
     private Long localId;
-    @Column("nome")
     private String nome;
-    @Column("endereco")
     private String endereco;
-    @Column("cep")
     private String cep;
-    @Column("cidade_id")
     private Long cidadeId;
 
     public Local() {

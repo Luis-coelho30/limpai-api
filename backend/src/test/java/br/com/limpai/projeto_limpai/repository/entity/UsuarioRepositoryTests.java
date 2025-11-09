@@ -33,7 +33,7 @@ public class UsuarioRepositoryTests {
         usuario.setEmail("teste@limpai.com");
         usuario.setSenha("123");
         usuario.setTelefone("11 92151-1511");
-        usuario.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+        usuario.setTipo(UsuarioEnum.VOLUNTARIO);
 
         usuarioRepository.save(usuario);
 
@@ -53,7 +53,7 @@ public class UsuarioRepositoryTests {
         System.out.println(usuarioSalvo.getEmail());
         System.out.println(usuarioSalvo.getSenha());
         System.out.println(usuarioSalvo.getTelefone());
-        System.out.println(usuarioSalvo.getTipoUsuario());
+        System.out.println(usuarioSalvo.getTipo());
 
     }
 

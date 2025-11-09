@@ -38,13 +38,13 @@ public class PatrocinadorServiceTests {
     @Test
     public void deveListarPatrocinadores() {
         Patrocinador p1 = new Patrocinador();
-        p1.setPatrocinadorId(1L);
+        p1.setUsuarioId(1L);
         p1.setRazaoSocial("Empresa A");
         p1.setNomeFantasia("A Fantasia");
         p1.setCnpj("12345678000199");
 
         Patrocinador p2 = new Patrocinador();
-        p2.setPatrocinadorId(2L);
+        p2.setUsuarioId(2L);
         p2.setRazaoSocial("Empresa B");
         p2.setNomeFantasia("B Fantasia");
         p2.setCnpj("98765432000188");
@@ -70,7 +70,7 @@ public class PatrocinadorServiceTests {
     @Test
     public void deveListarPatrocinador() {
         Patrocinador p1 = new Patrocinador();
-        p1.setPatrocinadorId(1L);
+        p1.setUsuarioId(1L);
         p1.setRazaoSocial("Empresa A");
         p1.setNomeFantasia("A Fantasia");
         p1.setCnpj("12345678000199");
@@ -81,7 +81,7 @@ public class PatrocinadorServiceTests {
         usuario.setEmail("teste@email.com");
         usuario.setTelefone("11 11111-1111");
         usuario.setSenha("senha123");
-        usuario.setTipoUsuario(UsuarioEnum.PATROCINADOR);
+        usuario.setTipo(UsuarioEnum.PATROCINADOR);
 
         Mockito.when(patrocinadorRepository.findById(1L))
                 .thenReturn(Optional.of(p1));
@@ -110,7 +110,7 @@ public class PatrocinadorServiceTests {
         usuario.setEmail("teste@empresa.com");
         usuario.setSenha("senha123");
         usuario.setTelefone("11 11111-1111");
-        usuario.setTipoUsuario(UsuarioEnum.PATROCINADOR);
+        usuario.setTipo(UsuarioEnum.PATROCINADOR);
 
         PatrocinadorCadastroDTO patrocinadorDTO = new PatrocinadorCadastroDTO(
                 usuario.getEmail(),
@@ -241,13 +241,13 @@ public class PatrocinadorServiceTests {
         Mockito.when(patrocinadorRepository.findById(1L))
                 .thenReturn(Optional.of(existente));
 
-        Mockito.doNothing().when(usuarioService).apagarUsuario(existente.getPatrocinadorId());
+        Mockito.doNothing().when(usuarioService).apagarUsuario(existente.getUsuarioId());
 
         patrocinadorService.apagarPatrocinador(1L);
 
         Mockito.verify(patrocinadorRepository).findById(1L);
         Mockito.verify(patrocinadorRepository).delete(existente);
-        Mockito.verify(usuarioService).apagarUsuario(existente.getPatrocinadorId());
+        Mockito.verify(usuarioService).apagarUsuario(existente.getUsuarioId());
 
     }
 

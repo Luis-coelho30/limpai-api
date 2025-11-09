@@ -25,13 +25,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Sql(statements = {
-        "INSERT INTO \"usuario\" (\"email\", \"senha\", \"telefone\", \"tipo\") VALUES ('teste@limpai.com', '123', '11 11111-1111', 'VOLUNTARIO')",
-        "INSERT INTO \"voluntario\" (\"usuario_id\", \"nome\", \"cpf\", \"data_nascimento\") VALUES (1, 'Luis', '123.111.111-14', '2025-01-01 10:30:00')",
-        "INSERT INTO \"estado\" (\"estado_id\", \"nome\", \"sigla\") VALUES (1, 'São Paulo', 'SP')",
-        "INSERT INTO \"cidade\" (\"cidade_id\", \"nome\", \"estado_id\") VALUES (1, 'São Paulo', 1)",
-        "INSERT INTO \"local\" (\"nome\", \"endereco\", \"cep\", \"cidade_id\") VALUES ('Praia Cristal', 'Rua X', '00000000', 1)",
-        "INSERT INTO \"campanha\" (\"nome\", \"descricao\", \"data_inicio\", \"data_fim\", \"local_id\") VALUES " +
-                "('Praia Limpa', 'Limpar praia', '2025-01-10 10:30:00', '2025-02-10 18:00:00', '1')",
+        "INSERT INTO usuario (email, senha, telefone, tipo) VALUES ('teste@limpai.com', '123', '11 11111-1111', 'VOLUNTARIO')",
+        "INSERT INTO voluntario (usuario_id, nome, cpf, data_nascimento) VALUES (1, 'Luis', '123.111.111-14', '2025-01-01')",
+        "INSERT INTO usuario(usuario_id, email, senha, telefone, tipo) VALUES (2, 'teste@email.com', 'senha1234', '11 11111-1111', 'PATROCINADOR')",
+        "INSERT INTO patrocinador(usuario_id, razao_social, nome_fantasia, cnpj) VALUES (2, 'teste', 'testeFantasia', '11111111000111')",
+        "INSERT INTO estado (estado_id, nome, sigla) VALUES (1, 'São Paulo', 'SP')",
+        "INSERT INTO cidade (cidade_id, nome, estado_id) VALUES (1, 'São Paulo', 1)",
+        "INSERT INTO local (nome, endereco, cep, cidade_id) VALUES ('Praia Cristal', 'Rua X', '00000000', 1)",
+        "INSERT INTO campanha (nome, descricao, data_inicio, data_fim, patrocinador_id, local_id) VALUES " +
+                "('Praia Limpa', 'Limpar praia', '2025-01-10 10:30:00', '2025-02-10 18:00:00', '2', '1')",
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class UsuarioCampanhaRepositoryTests {
 

@@ -5,14 +5,10 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
-@Table("usuario_campanha")
 public class UsuarioCampanha {
 
-    @Column("campanha_id")
     private Long campanhaId;
-    @Column("usuario_id")
     private Long usuarioId;
-    @Column("data_inscricao")
     private LocalDateTime dataInscricao;
 
     public UsuarioCampanha() {

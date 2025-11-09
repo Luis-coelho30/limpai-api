@@ -6,7 +6,6 @@ import br.com.limpai.projeto_limpai.model.entity.Usuario;
 import br.com.limpai.projeto_limpai.repository.entity.UsuarioRepository;
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +41,7 @@ public class UsuarioService {
         usuario.setEmail(email);
         usuario.setSenha(encoder.encode(senha));
         usuario.setTelefone(telefone);
-        usuario.setTipoUsuario(tipoUsuario);
+        usuario.setTipo(tipoUsuario);
 
         return usuarioRepository.save(usuario);
     }
@@ -63,7 +62,7 @@ public class UsuarioService {
 
         usuario.setEmail(email);
         usuario.setTelefone(telefone);
-        usuario.setTipoUsuario(tipoUsuario);
+        usuario.setTipo(tipoUsuario);
 
         return usuarioRepository.save(usuario);
     }

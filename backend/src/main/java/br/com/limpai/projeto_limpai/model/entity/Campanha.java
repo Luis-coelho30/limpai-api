@@ -9,27 +9,17 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Table("campanha")
 public class Campanha {
 
     @Id
-    @Column("campanha_id")
     private Long campanhaId;
-    @Column("nome")
     private String nome;
-    @Column("descricao")
     private String descricao;
-    @Column("data_inicio")
     private LocalDateTime dataInicio;
-    @Column("data_fim")
     private LocalDateTime dataFim;
-    @Column("meta_fundos")
     private BigDecimal metaFundos = BigDecimal.ZERO;
-    @Column("fundos_arrecadados")
     private BigDecimal fundosArrecadados = BigDecimal.ZERO;
-    @Column("patrocinador_id")
     private Long patrocinadorId;
-    @Column("local_id")
     private Long localId;
 
     public Campanha() {

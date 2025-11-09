@@ -41,13 +41,13 @@ public class VoluntarioServiceTests {
     @Test
     public void deveListarVoluntarios() {
         Voluntario v1 = new Voluntario();
-        v1.setVoluntarioId(1L);
+        v1.setUsuarioId(1L);
         v1.setNome("Claudio");
         v1.setCpf("111.111.111-11");
         v1.setDataNascimento(LocalDate.now());
 
         Voluntario v2 = new Voluntario();
-        v2.setVoluntarioId(2L);
+        v2.setUsuarioId(2L);
         v2.setNome("Brito");
         v2.setCpf("111.111.222-22");
         v2.setDataNascimento(LocalDate.now());
@@ -73,7 +73,7 @@ public class VoluntarioServiceTests {
     @Test
     public void deveListarVoluntarioPublico() {
         Voluntario v1 = new Voluntario();
-        v1.setVoluntarioId(1L);
+        v1.setUsuarioId(1L);
         v1.setNome("Claudio");
         v1.setCpf("111.111.111-11");
         v1.setDataNascimento(LocalDate.now());
@@ -92,7 +92,7 @@ public class VoluntarioServiceTests {
     @Test
     public void deveListarVoluntarioPrivado() {
         Voluntario v1 = new Voluntario();
-        v1.setVoluntarioId(1L);
+        v1.setUsuarioId(1L);
         v1.setNome("Claudio");
         v1.setCpf("111.111.111-11");
         v1.setDataNascimento(LocalDate.now());
@@ -103,7 +103,7 @@ public class VoluntarioServiceTests {
         usuario.setEmail("teste@email.com");
         usuario.setSenha("senha123");
         usuario.setTelefone("11 11111-1111");
-        usuario.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+        usuario.setTipo(UsuarioEnum.VOLUNTARIO);
 
         Mockito.when(voluntarioRepository.findById(1L))
                 .thenReturn(Optional.of(v1));
@@ -129,7 +129,7 @@ public class VoluntarioServiceTests {
         usuario.setEmail("teste@empresa.com");
         usuario.setSenha("senha123");
         usuario.setTelefone("11 11111-1111");
-        usuario.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+        usuario.setTipo(UsuarioEnum.VOLUNTARIO);
 
         VoluntarioCadastroDTO voluntarioDTO = new VoluntarioCadastroDTO(
                 usuario.getEmail(),
@@ -261,13 +261,13 @@ public class VoluntarioServiceTests {
         Mockito.when(voluntarioRepository.findById(1L))
                 .thenReturn(Optional.of(existente));
 
-        Mockito.doNothing().when(usuarioService).apagarUsuario(existente.getVoluntarioId());
+        Mockito.doNothing().when(usuarioService).apagarUsuario(existente.getUsuarioId());
 
         voluntarioService.apagarVoluntario(1L);
 
         Mockito.verify(voluntarioRepository).findById(1L);
         Mockito.verify(voluntarioRepository).delete(existente);
-        Mockito.verify(usuarioService).apagarUsuario(existente.getVoluntarioId());
+        Mockito.verify(usuarioService).apagarUsuario(existente.getUsuarioId());
 
     }
 

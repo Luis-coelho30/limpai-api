@@ -1,41 +1,33 @@
 package br.com.limpai.projeto_limpai.model.entity;
 
-import br.com.limpai.projeto_limpai.types.UsuarioEnum;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Objects;
 
-@Table("patrocinador")
 public class Patrocinador {
 
     @Id
-    @Column("usuario_id")
-    private Long patrocinadorId;
-    @Column("razao_social")
+    private Long usuarioId;
     private String razaoSocial;
-    @Column("nome_fantasia")
     private String nomeFantasia;
-    @Column("cnpj")
     private String cnpj;
 
     public Patrocinador() {
     }
 
-    public Patrocinador(Long patrocinadorId, String razaoSocial, String nomeFantasia, String cnpj) {
-        this.patrocinadorId = patrocinadorId;
+    public Patrocinador(Long usuarioId, String razaoSocial, String nomeFantasia, String cnpj) {
+        this.usuarioId = usuarioId;
         this.razaoSocial = razaoSocial;
         this.nomeFantasia = nomeFantasia;
         this.cnpj = cnpj;
     }
 
-    public Long getPatrocinadorId() {
-        return patrocinadorId;
+    public Long getUsuarioId() {
+        return usuarioId;
     }
 
-    public void setPatrocinadorId(Long patrocinadorId) {
-        this.patrocinadorId = patrocinadorId;
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public String getRazaoSocial() {
@@ -66,11 +58,11 @@ public class Patrocinador {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Patrocinador patrocinador = (Patrocinador) o;
-        return Objects.equals(patrocinadorId, patrocinador.patrocinadorId);
+        return Objects.equals(usuarioId, patrocinador.usuarioId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(patrocinadorId);
+        return Objects.hashCode(usuarioId);
     }
 }

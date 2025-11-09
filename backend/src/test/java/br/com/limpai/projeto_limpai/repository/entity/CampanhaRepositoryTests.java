@@ -1,5 +1,6 @@
 package br.com.limpai.projeto_limpai.repository.entity;
 
+import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaDTO;
 import br.com.limpai.projeto_limpai.model.entity.Campanha;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -24,9 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Sql(statements = {
-        "INSERT INTO \"estado\"(\"estado_id\", \"nome\", \"sigla\") VALUES (1, 'São Paulo', 'SP')",
-        "INSERT INTO \"cidade\"(\"cidade_id\", \"nome\", \"estado_id\") VALUES (1, 'Campinas', 1)",
-        "INSERT INTO \"local\"(\"local_id\", \"nome\", \"endereco\", \"cidade_id\", \"cep\") VALUES " +
+        "INSERT INTO estado(estado_id, nome, sigla) VALUES (1, 'São Paulo', 'SP')",
+        "INSERT INTO cidade(cidade_id, nome, estado_id) VALUES (1, 'Campinas', 1)",
+        "INSERT INTO usuario(usuario_id, email, senha, telefone, tipo) " +
+                "VALUES (1, 'teste@email.com', 'senha1234', '11 11111-1111', 'PATROCINADOR')",
+        "INSERT INTO patrocinador(usuario_id, razao_social, nome_fantasia, cnpj) " +
+                "VALUES (1, 'teste', 'testeFantasia', '11111111000111')",
+        "INSERT INTO local(local_id, nome, endereco, cidade_id, cep) VALUES " +
         "(1, 'Parque Central', 'Rua X, 123', 1, '13000000')"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class CampanhaRepositoryTests {
@@ -44,6 +49,7 @@ public class CampanhaRepositoryTests {
         campanha.setDataInicio(LocalDateTime.now());
         campanha.setDescricao("Esta é uma campanha");
         campanha.setMetaFundos(BigDecimal.TEN);
+        campanha.setPatrocinadorId(1L);
         campanha.setLocalId(1L);
 
         campanhaRepository.save(campanha);
@@ -68,6 +74,24 @@ public class CampanhaRepositoryTests {
         System.out.println(campanhaSalva.getMetaFundos());
         System.out.println(campanhaSalva.getFundosArrecadados());
         System.out.println(campanhaSalva.getLocalId());
+    }
+
+    @Test
+    @Order(2)
+    void mostrarCampanhaView() {
+        Optional<CampanhaDTO> campanha = campanhaRepository.findCampanhaById(1L);
+        CampanhaDTO campanhaSalva;
+
+        assertTrue(campanha.isPresent());
+
+        campanhaSalva = campanha.get();
+        System.out.println(campanhaSalva.nome());
+        System.out.println(campanhaSalva.dataInicio());
+        System.out.println(campanhaSalva.dataFim());
+        System.out.println(campanhaSalva.descricao());
+        System.out.println(campanhaSalva.metaFundos());
+        System.out.println(campanhaSalva.fundosArrecadados());
+        System.out.println(campanhaSalva.localNome());
     }
 
     @Test

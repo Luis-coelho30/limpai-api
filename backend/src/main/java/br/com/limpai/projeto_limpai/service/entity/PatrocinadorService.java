@@ -129,7 +129,7 @@ public class PatrocinadorService {
         Usuario usuario;
 
         if (patrocinadorRequestDTO.telefone() != null && !patrocinadorRequestDTO.telefone().isBlank()) {
-            usuario = usuarioService.atualizarTelefone(patrocinador.getPatrocinadorId(), patrocinadorRequestDTO.telefone());
+            usuario = usuarioService.atualizarTelefone(patrocinador.getUsuarioId(), patrocinadorRequestDTO.telefone());
         } else {
             usuario = usuarioService.getUsuarioPorId(patrocinadorId);
         }

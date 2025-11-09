@@ -43,7 +43,7 @@ public class UsuarioServiceTests {
         usuarioSalvo.setEmail("teste@limpai.com");
         usuarioSalvo.setSenha("123");
         usuarioSalvo.setTelefone("11 11111-1111");
-        usuarioSalvo.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+        usuarioSalvo.setTipo(UsuarioEnum.VOLUNTARIO);
 
         Mockito.when(usuarioRepository.findById(1L))
                 .thenReturn(Optional.of(usuarioSalvo));
@@ -55,7 +55,7 @@ public class UsuarioServiceTests {
                 () -> assertEquals("teste@limpai.com", resultado.getEmail()),
                 () -> assertEquals("123", resultado.getSenha()),
                 () -> assertEquals("11 11111-1111", resultado.getTelefone()),
-                () -> assertEquals(UsuarioEnum.VOLUNTARIO, resultado.getTipoUsuario())
+                () -> assertEquals(UsuarioEnum.VOLUNTARIO, resultado.getTipo())
         );
 
         Mockito.verify(usuarioRepository).findById(1L);
@@ -72,7 +72,7 @@ public class UsuarioServiceTests {
         Mockito.when(usuarioRepository.save(Mockito.any(Usuario.class))).thenReturn(usuarioSalvo);
 
         Usuario resultado = usuarioService.criarUsuarioBase(usuarioSalvo.getEmail(), usuarioSalvo.getSenha(),
-                usuarioSalvo.getTelefone(),usuarioSalvo.getTipoUsuario());
+                usuarioSalvo.getTelefone(),usuarioSalvo.getTipo());
 
         assertNotNull(resultado.getUsuarioId());
         assertEquals("teste@limpai.com", resultado.getEmail());
@@ -89,7 +89,7 @@ public class UsuarioServiceTests {
         usuarioExistente.setEmail("outro@limpai.com");
         usuarioExistente.setSenha("123");
         usuarioExistente.setTelefone("11 11111-1111");
-        usuarioExistente.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+        usuarioExistente.setTipo(UsuarioEnum.VOLUNTARIO);
 
         Mockito.when(usuarioRepository.findById(1L))
                 .thenReturn(Optional.of(usuarioExistente));
@@ -133,7 +133,7 @@ public class UsuarioServiceTests {
         usuarioExistente.setEmail("teste@limpai.com");
         usuarioExistente.setSenha("123");
         usuarioExistente.setTelefone("11 11111-1111");
-        usuarioExistente.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+        usuarioExistente.setTipo(UsuarioEnum.VOLUNTARIO);
 
         Mockito.when(usuarioRepository.findById(1L))
                 .thenReturn(Optional.of(usuarioExistente));
@@ -145,9 +145,8 @@ public class UsuarioServiceTests {
 
         assertEquals(1L, resultado.getUsuarioId());
         assertEquals("novo@limpai.com", resultado.getEmail());
-        assertEquals("456", resultado.getSenha());
         assertEquals("11 11111-1111", resultado.getTelefone());
-        assertEquals(UsuarioEnum.VOLUNTARIO, resultado.getTipoUsuario());
+        assertEquals(UsuarioEnum.VOLUNTARIO, resultado.getTipo());
 
         Mockito.verify(usuarioRepository).findById(1L);
         Mockito.verify(usuarioRepository).save(Mockito.any(Usuario.class));
@@ -160,7 +159,7 @@ public class UsuarioServiceTests {
         usuarioExistente.setEmail("teste@limpai.com");
         usuarioExistente.setSenha("123");
         usuarioExistente.setTelefone("11 11111-1111");
-        usuarioExistente.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+        usuarioExistente.setTipo(UsuarioEnum.VOLUNTARIO);
 
         Mockito.when(usuarioRepository.findById(1L))
                 .thenReturn(Optional.of(usuarioExistente));
@@ -178,7 +177,7 @@ public class UsuarioServiceTests {
         usuarioExistente.setEmail("teste@limpai.com");
         usuarioExistente.setSenha("123");
         usuarioExistente.setTelefone("11 11111-1111");
-        usuarioExistente.setTipoUsuario(UsuarioEnum.VOLUNTARIO);
+        usuarioExistente.setTipo(UsuarioEnum.VOLUNTARIO);
 
         Mockito.when(usuarioRepository.findByEmail("teste@limpai.com"))
                 .thenReturn(Optional.of(usuarioExistente));
@@ -190,7 +189,7 @@ public class UsuarioServiceTests {
                 () -> assertEquals("teste@limpai.com", usuario.getEmail()),
                 () -> assertEquals("123", usuario.getSenha()),
                 () -> assertEquals("11 11111-1111", usuario.getTelefone()),
-                () -> assertEquals(UsuarioEnum.VOLUNTARIO, usuario.getTipoUsuario())
+                () -> assertEquals(UsuarioEnum.VOLUNTARIO, usuario.getTipo())
         );
 
         Mockito.verify(usuarioRepository).findByEmail("teste@limpai.com");

@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public interface VoluntarioRepository extends CrudRepository<Voluntario, Long> {
 
     @Modifying
-    @Query("INSERT INTO \"voluntario\"(\"usuario_id\", \"nome\", \"cpf\", \"data_nascimento\") " +
+    @Query("INSERT INTO voluntario(usuario_id, nome, cpf, data_nascimento) " +
             "VALUES (:usuarioId, :nome, :cpf, :dataNascimento)")
     void insertVoluntario(@Param("usuarioId") Long usuarioId,
                             @Param("nome") String nome,

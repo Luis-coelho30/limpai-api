@@ -114,7 +114,7 @@ public class AuthService {
                 usuario.getUsuarioId().toString(),
                 nomePerfil,
                 usuario.getEmail(),
-                usuario.getTipoUsuario().name()
+                usuario.getTipo().name()
         );
 
         return new LoginResponseDTO(accessToken, usuarioView);

@@ -2,35 +2,27 @@ package br.com.limpai.projeto_limpai.model.entity;
 
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Objects;
 
-@Table(name = "usuario")
 public class Usuario {
 
     @Id
-    @Column("usuario_id")
     private Long usuarioId;
-    @Column("email")
     private String email;
-    @Column("senha")
     private String senha;
-    @Column("telefone")
     private String telefone;
-    @Column("tipo")
-    private UsuarioEnum tipoUsuario;
+    private UsuarioEnum tipo;
 
     public Usuario() {
     }
 
-    public Usuario(Long usuarioId, String email, String senha, String telefone, UsuarioEnum tipoUsuario) {
+    public Usuario(Long usuarioId, String email, String senha, String telefone, UsuarioEnum tipo) {
         this.usuarioId = usuarioId;
         this.email = email;
         this.senha = senha;
         this.telefone = telefone;
-        this.tipoUsuario = tipoUsuario;
+        this.tipo = tipo;
     }
 
     public Long getUsuarioId() {
@@ -65,12 +57,12 @@ public class Usuario {
         this.telefone = telefone;
     }
 
-    public UsuarioEnum getTipoUsuario() {
-        return tipoUsuario;
+    public UsuarioEnum getTipo() {
+        return tipo;
     }
 
-    public void setTipoUsuario(UsuarioEnum tipoUsuario) {
-        this.tipoUsuario = tipoUsuario;
+    public void setTipo(UsuarioEnum tipo) {
+        this.tipo = tipo;
     }
 
     @Override

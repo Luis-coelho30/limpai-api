@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Sql(statements = {
-        "INSERT INTO \"estado\" (\"estado_id\", \"nome\", \"sigla\") VALUES (1, 'São Paulo', 'SP')"
+        "INSERT INTO estado (estado_id, nome, sigla) VALUES (1, 'São Paulo', 'SP')"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class EstadoRepositoryTests {
 

@@ -1,41 +1,34 @@
 package br.com.limpai.projeto_limpai.model.entity;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Table("voluntario")
 public class Voluntario {
 
     @Id
-    @Column("usuario_id")
-    private Long voluntarioId;
-    @Column("nome")
+    private Long usuarioId;
     private String nome;
-    @Column("cpf")
     private String cpf;
-    @Column("data_nascimento")
     private LocalDate dataNascimento;
 
     public Voluntario() {
     }
 
-    public Voluntario(Long voluntarioId, String nome, String cpf, LocalDate dataNascimento) {
-        this.voluntarioId = voluntarioId;
+    public Voluntario(Long usuarioId, String nome, String cpf, LocalDate dataNascimento) {
+        this.usuarioId = usuarioId;
         this.nome = nome;
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;
     }
 
-    public Long getVoluntarioId() {
-        return voluntarioId;
+    public Long getUsuarioId() {
+        return usuarioId;
     }
 
-    public void setVoluntarioId(Long voluntarioId) {
-        this.voluntarioId = voluntarioId;
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public String getNome() {
@@ -66,11 +59,11 @@ public class Voluntario {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Voluntario voluntario = (Voluntario) o;
-        return Objects.equals(voluntarioId, voluntario.voluntarioId);
+        return Objects.equals(usuarioId, voluntario.usuarioId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(voluntarioId);
+        return Objects.hashCode(usuarioId);
     }
 }
