@@ -47,8 +47,8 @@ public class CampanhaService {
 
     @Transactional(readOnly = true)
     public CampanhaDTO getCampanhaById(Long campanhaId) {
-        return campanhaRepository.findCampanhaById(campanhaId)
-                .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaId));
+        return CampanhaDTO.from(campanhaRepository.findCampanhaById(campanhaId)
+                .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaId)));
     }
 
     @Transactional(readOnly = true)
@@ -129,8 +129,8 @@ public class CampanhaService {
 
         Campanha novaCampanha = campanhaRepository.save(campanhaSalva);
 
-        return campanhaRepository.findCampanhaById(novaCampanha.getCampanhaId())
-                .orElseThrow(() -> new CampanhaNaoEncontradaException(novaCampanha.getCampanhaId()));
+        return CampanhaDTO.from(campanhaRepository.findCampanhaById(novaCampanha.getCampanhaId())
+                .orElseThrow(() -> new CampanhaNaoEncontradaException(novaCampanha.getCampanhaId())));
     }
 
     @Transactional
@@ -183,8 +183,8 @@ public class CampanhaService {
 
         Campanha campanhaAtualizada = campanhaRepository.save(campanha);
 
-        return campanhaRepository.findCampanhaById(campanhaAtualizada.getCampanhaId())
-                .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaAtualizada.getCampanhaId()));
+        return CampanhaDTO.from(campanhaRepository.findCampanhaById(campanhaAtualizada.getCampanhaId())
+                .orElseThrow(() -> new CampanhaNaoEncontradaException(campanhaAtualizada.getCampanhaId())));
     }
 
     @Transactional

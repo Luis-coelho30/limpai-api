@@ -1,6 +1,8 @@
 package br.com.limpai.projeto_limpai.service.entity;
 
+import br.com.limpai.projeto_limpai.dto.internal.CampanhaProjection;
 import br.com.limpai.projeto_limpai.dto.request.entity.CriarCampanhaDTO;
+import br.com.limpai.projeto_limpai.dto.response.local.LocalResponseDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaDTO;
 import br.com.limpai.projeto_limpai.exception.campanha.CampanhaNaoEncontradaException;
 import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoException;
@@ -60,7 +62,8 @@ public class CampanhaServiceTests {
 
     @Test
     public void deveListarCampanhaPorId() {
-        CampanhaDTO campanhaMock = new CampanhaDTO(
+        CampanhaProjection campanhaMock = new CampanhaProjection(
+                1L,
                 "Limpeza da Praia Cristal",
                 "Bora limpar!",
                 LocalDateTime.MIN,
@@ -68,9 +71,11 @@ public class CampanhaServiceTests {
                 BigDecimal.ZERO,
                 BigDecimal.TEN,
                 5L,
+                1L,
                 "Praia do Futuro",
                 "Av. Litorânea, 100",
                 "60000-000",
+                1L,
                 "Fortaleza",
                 "CE"
         );
@@ -84,7 +89,7 @@ public class CampanhaServiceTests {
                 () -> assertEquals("Limpeza da Praia Cristal", resultado.nome()),
                 () -> assertEquals("Bora limpar!", resultado.descricao()),
                 () -> assertEquals(5L, resultado.qtdInscritos()),
-                () -> assertEquals("Fortaleza", resultado.cidadeNome())
+                () -> assertEquals("Fortaleza", resultado.localDTO().cidadeNome())
         );
 
         Mockito.verify(campanhaRepository).findCampanhaById(1L);
@@ -103,7 +108,8 @@ public class CampanhaServiceTests {
         campanhaSalva.setDataFim(LocalDateTime.MAX);
         campanhaSalva.setLocalId(1L);
 
-        CampanhaDTO campanhaMock = new CampanhaDTO(
+        CampanhaProjection campanhaMock = new CampanhaProjection(
+                1L,
                 "Limpeza da Praia Cristal",
                 "Bora limpar!",
                 LocalDateTime.MIN,
@@ -111,9 +117,11 @@ public class CampanhaServiceTests {
                 BigDecimal.ZERO,
                 BigDecimal.TEN,
                 5L,
+                1L,
                 "Praia do Futuro",
                 "Av. Litorânea, 100",
                 "60000-000",
+                1L,
                 "Fortaleza",
                 "CE"
         );
@@ -153,7 +161,8 @@ public class CampanhaServiceTests {
         campanhaExistente.setDataFim(LocalDateTime.MAX);
         campanhaExistente.setLocalId(1L);
 
-        CampanhaDTO campanhaMock = new CampanhaDTO(
+        CampanhaProjection campanhaMock = new CampanhaProjection(
+                1L,
                 "Lixo na Praia Cristal",
                 "Bora sujar!",
                 LocalDateTime.MAX,
@@ -161,9 +170,11 @@ public class CampanhaServiceTests {
                 BigDecimal.TEN,
                 BigDecimal.ZERO,
                 5L,
+                1L,
                 "Praia do Futuro",
                 "Av. Litorânea, 100",
                 "60000-000",
+                1L,
                 "Fortaleza",
                 "CE"
         );

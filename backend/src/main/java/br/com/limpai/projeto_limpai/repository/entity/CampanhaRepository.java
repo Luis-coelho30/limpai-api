@@ -1,5 +1,6 @@
 package br.com.limpai.projeto_limpai.repository.entity;
 
+import br.com.limpai.projeto_limpai.dto.internal.CampanhaProjection;
 import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaMinDTO;
 import br.com.limpai.projeto_limpai.model.entity.Campanha;
@@ -37,8 +38,8 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
             cam.campanha_id, cam.nome, cam.descricao, cam.data_inicio,
             cam.data_fim, cam.meta_fundos, cam.fundos_arrecadados,
             (SELECT COUNT(*) FROM usuario_campanha uc WHERE uc.campanha_id = cam.campanha_id) AS qtd_inscritos,
-            l.nome as local_nome, l.endereco, l.cep,
-            c.nome as cidade_nome,
+            l.local_id, l.nome as local_nome, l.endereco, l.cep,
+            c.cidade_id, c.nome as cidade_nome,
             e.sigla as estado_sigla
         FROM campanha cam
         INNER JOIN local l ON cam.local_id = l.local_id
@@ -46,7 +47,7 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
         INNER JOIN estado e ON c.estado_id = e.estado_id
         WHERE cam.campanha_id = :campanhaId
     """)
-    Optional<CampanhaDTO> findCampanhaById(@Param("campanhaId") Long campanhaId);
+    Optional<CampanhaProjection> findCampanhaById(@Param("campanhaId") Long campanhaId);
 
     @Query("""
         SELECT

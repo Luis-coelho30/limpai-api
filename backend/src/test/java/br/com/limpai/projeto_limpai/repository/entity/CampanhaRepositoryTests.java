@@ -1,5 +1,6 @@
 package br.com.limpai.projeto_limpai.repository.entity;
 
+import br.com.limpai.projeto_limpai.dto.internal.CampanhaProjection;
 import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaDTO;
 import br.com.limpai.projeto_limpai.model.entity.Campanha;
 import org.junit.jupiter.api.MethodOrderer;
@@ -79,19 +80,27 @@ public class CampanhaRepositoryTests {
     @Test
     @Order(2)
     void mostrarCampanhaView() {
-        Optional<CampanhaDTO> campanha = campanhaRepository.findCampanhaById(1L);
-        CampanhaDTO campanhaSalva;
+        Optional<CampanhaProjection> campanha = campanhaRepository.findCampanhaById(1L);
+        CampanhaProjection campanhaSalva;
 
         assertTrue(campanha.isPresent());
 
         campanhaSalva = campanha.get();
+        System.out.println(campanhaSalva.campanhaId());
         System.out.println(campanhaSalva.nome());
+        System.out.println(campanhaSalva.descricao());
         System.out.println(campanhaSalva.dataInicio());
         System.out.println(campanhaSalva.dataFim());
-        System.out.println(campanhaSalva.descricao());
         System.out.println(campanhaSalva.metaFundos());
         System.out.println(campanhaSalva.fundosArrecadados());
+        System.out.println(campanhaSalva.qtdInscritos());
+        System.out.println(campanhaSalva.localId());
         System.out.println(campanhaSalva.localNome());
+        System.out.println(campanhaSalva.endereco());
+        System.out.println(campanhaSalva.cep());
+        System.out.println(campanhaSalva.cidadeId());
+        System.out.println(campanhaSalva.cidadeNome());
+        System.out.println(campanhaSalva.estadoSigla());
     }
 
     @Test
