@@ -96,7 +96,7 @@ public class CampanhaController {
         return ResponseEntity.ok(campanhaService.estenderPrazo(id, prazoDTO.novaDataFim()));
     }
 
-    @PatchMapping("/{id}/estender")
+    @PatchMapping("/{id}/doar")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PATROCINADOR')")
     public ResponseEntity<Void> registrarDoacao(@PathVariable Long id, @RequestBody DoacaoDTO doacaoDTO) {
         campanhaService.registrarDoacao(id, doacaoDTO.valor());

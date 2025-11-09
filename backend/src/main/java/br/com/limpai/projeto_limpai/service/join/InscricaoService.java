@@ -1,5 +1,6 @@
 package br.com.limpai.projeto_limpai.service.join;
 
+import br.com.limpai.projeto_limpai.dto.response.perfil.inscricao.MinhaInscricaoDTO;
 import br.com.limpai.projeto_limpai.exception.campanha.CampanhaExpiradaException;
 import br.com.limpai.projeto_limpai.exception.campanha.CampanhaNaoEncontradaException;
 import br.com.limpai.projeto_limpai.exception.campanha.UsuarioJaEstaInscritoException;
@@ -9,11 +10,15 @@ import br.com.limpai.projeto_limpai.model.join.UsuarioCampanha;
 import br.com.limpai.projeto_limpai.repository.join.UsuarioCampanhaRepository;
 import br.com.limpai.projeto_limpai.service.entity.CampanhaService;
 import br.com.limpai.projeto_limpai.service.entity.UsuarioService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class InscricaoService {
@@ -29,8 +34,8 @@ public class InscricaoService {
     }
 
     @Transactional(readOnly = true)
-    public List<UsuarioCampanha> getAllByUsuario(Long usuarioId) {
-        return inscricaoRepository.findAllByUsuario(usuarioId);
+    public Page<MinhaInscricaoDTO> getAllByUsuario(Long usuarioId, Pageable pageable) {
+        return campanhaService.listarMinhasInscricoes(usuarioId, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -39,7 +44,7 @@ public class InscricaoService {
     }
 
     @Transactional
-    public void inscrever(Long usuarioId, Long campanhaId) {
+    public void inscrever(Long usuarioId, Long campanhaId, BigDecimal valorDoacao) {
         if(!usuarioService.verificarUsuarioPorId(usuarioId)) {
             throw new UsuarioNaoEncontradoException(usuarioId);
         }
@@ -54,6 +59,10 @@ public class InscricaoService {
 
         if(inscricaoRepository.existsByUsuarioAndCampanha(usuarioId, campanhaId)) {
             throw new UsuarioJaEstaInscritoException(usuarioId, campanhaId);
+        }
+
+        if(Objects.equals(valorDoacao, BigDecimal.ZERO)) {
+            campanhaService.registrarDoacao(campanhaId, valorDoacao);
         }
 
         UsuarioCampanha inscricao = new UsuarioCampanha();

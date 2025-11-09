@@ -1,5 +1,6 @@
 package br.com.limpai.projeto_limpai.service.join;
 
+import br.com.limpai.projeto_limpai.dto.response.perfil.inscricao.MinhaInscricaoDTO;
 import br.com.limpai.projeto_limpai.exception.campanha.CampanhaExpiradaException;
 import br.com.limpai.projeto_limpai.exception.campanha.CampanhaNaoEncontradaException;
 import br.com.limpai.projeto_limpai.exception.campanha.UsuarioJaEstaInscritoException;
@@ -16,7 +17,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,34 +45,34 @@ public class InscricaoServiceTest {
 
     @Test
     public void deveListarInscricoesPorUsuario() {
-        UsuarioCampanha i1 = new UsuarioCampanha();
-        i1.setUsuarioId(1L);
-        i1.setCampanhaId(1L);
-        i1.setDataInscricao(LocalDateTime.MAX);
+        Long usuarioId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
 
-        UsuarioCampanha i2 = new UsuarioCampanha();
-        i2.setUsuarioId(1L);
-        i2.setCampanhaId(2L);
-        i2.setDataInscricao(LocalDateTime.MAX);
-
-        Mockito.when(inscricaoRepository.findAllByUsuario(1L))
-                .thenReturn(List.of(i1, i2));
-
-        List<UsuarioCampanha> inscricaoList = inscricaoService.getAllByUsuario(1L);
-
-        Assertions.assertAll(
-                () -> assertEquals(2, inscricaoList.size()),
-
-                () -> assertEquals(1L, inscricaoList.getFirst().getUsuarioId()),
-                () -> assertEquals(1L, inscricaoList.getFirst().getCampanhaId()),
-                () -> assertEquals(LocalDateTime.MAX, inscricaoList.getFirst().getDataInscricao()),
-
-                () -> assertEquals(1L, inscricaoList.get(1).getUsuarioId()),
-                () -> assertEquals(2L, inscricaoList.get(1).getCampanhaId()),
-                () -> assertEquals(LocalDateTime.MAX, inscricaoList.get(1).getDataInscricao())
+        MinhaInscricaoDTO dto1 = new MinhaInscricaoDTO(
+                10L, "Limpeza da Praia", LocalDateTime.now().plusDays(5),
+                "Praia do Futuro", "Fortaleza", "CE", LocalDateTime.now().minusDays(1)
+        );
+        MinhaInscricaoDTO dto2 = new MinhaInscricaoDTO(
+                20L, "Plantio de Mudas", LocalDateTime.now().plusDays(10),
+                "Parque Central", "São Paulo", "SP", LocalDateTime.now().minusDays(2)
         );
 
-        Mockito.verify(inscricaoRepository).findAllByUsuario(1L);
+        Mockito.when(campanhaService.listarMinhasInscricoes(usuarioId, pageable))
+                .thenReturn(new PageImpl<>(List.of(dto1, dto2), pageable, 2L));
+
+        Page<MinhaInscricaoDTO> resultadoPage = inscricaoService.getAllByUsuario(usuarioId, pageable);
+
+        Assertions.assertAll(
+                () -> assertEquals(2L, resultadoPage.getTotalElements()),
+                () -> assertEquals(1, resultadoPage.getTotalPages()),
+
+                () -> assertEquals(2, resultadoPage.getContent().size()),
+                () -> assertEquals("Limpeza da Praia", resultadoPage.getContent().getFirst().nomeCampanha()),
+                () -> assertEquals(10L, resultadoPage.getContent().getFirst().campanhaId()),
+                () -> assertEquals("Plantio de Mudas", resultadoPage.getContent().get(1).nomeCampanha())
+        );
+
+        Mockito.verify(campanhaService).listarMinhasInscricoes(usuarioId, pageable);
     }
 
     @Test
@@ -117,7 +123,7 @@ public class InscricaoServiceTest {
                 .when(inscricaoRepository)
                 .inscrever(Mockito.any(UsuarioCampanha.class));
 
-        inscricaoService.inscrever(usuarioId, campanhaId);
+        inscricaoService.inscrever(usuarioId, campanhaId, BigDecimal.ZERO);
 
         Mockito.verify(usuarioService).verificarUsuarioPorId(usuarioId);
         Mockito.verify(campanhaService).verificarCampanhaPorId(campanhaId);
@@ -155,7 +161,7 @@ public class InscricaoServiceTest {
         Mockito.when(usuarioService.verificarUsuarioPorId(usuarioId)).thenReturn(false);
 
         assertThrows(UsuarioNaoEncontradoException.class, () ->
-                inscricaoService.inscrever(usuarioId, campanhaId)
+                inscricaoService.inscrever(usuarioId, campanhaId, BigDecimal.ZERO)
         );
 
         Mockito.verify(usuarioService).verificarUsuarioPorId(usuarioId);
@@ -169,7 +175,7 @@ public class InscricaoServiceTest {
         Mockito.when(campanhaService.verificarCampanhaPorId(campanhaId)).thenReturn(false);
 
         assertThrows(CampanhaNaoEncontradaException.class, () ->
-                inscricaoService.inscrever(usuarioId, campanhaId)
+                inscricaoService.inscrever(usuarioId, campanhaId, BigDecimal.ZERO)
         );
 
         Mockito.verify(usuarioService).verificarUsuarioPorId(usuarioId);
@@ -185,7 +191,7 @@ public class InscricaoServiceTest {
         Mockito.when(campanhaService.verificarCampanhaExpirada(campanhaId)).thenReturn(true);
 
         assertThrows(CampanhaExpiradaException.class, () ->
-                inscricaoService.inscrever(usuarioId, campanhaId)
+                inscricaoService.inscrever(usuarioId, campanhaId, BigDecimal.ZERO)
         );
 
         Mockito.verify(usuarioService).verificarUsuarioPorId(usuarioId);
@@ -203,7 +209,7 @@ public class InscricaoServiceTest {
         Mockito.when(inscricaoRepository.existsByUsuarioAndCampanha(usuarioId, campanhaId)).thenReturn(true);
 
         assertThrows(UsuarioJaEstaInscritoException.class, () ->
-                inscricaoService.inscrever(usuarioId, campanhaId)
+                inscricaoService.inscrever(usuarioId, campanhaId, BigDecimal.ZERO)
         );
 
         Mockito.verify(usuarioService).verificarUsuarioPorId(usuarioId);

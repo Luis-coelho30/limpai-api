@@ -3,6 +3,7 @@ package br.com.limpai.projeto_limpai.service.entity;
 import br.com.limpai.projeto_limpai.dto.request.entity.CriarCampanhaDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaMinDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.inscricao.MinhaInscricaoDTO;
 import br.com.limpai.projeto_limpai.exception.campanha.CampanhaExpiradaException;
 import br.com.limpai.projeto_limpai.exception.campanha.CampanhaNaoEncontradaException;
 import br.com.limpai.projeto_limpai.exception.campanha.DataInvalidaException;
@@ -55,6 +56,14 @@ public class CampanhaService {
     public Page<CampanhaMinDTO> listarMinhasCampanhas(Long patrocinadorId, Pageable pageable) {
         List<CampanhaMinDTO> campanhas = campanhaRepository.findByPatrocinadorId(patrocinadorId, pageable);
         long total = campanhaRepository.countByPatrocinadorId(patrocinadorId);
+
+        return new PageImpl<>(campanhas, pageable, total);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<MinhaInscricaoDTO> listarMinhasInscricoes(Long id, Pageable pageable) {
+        List<MinhaInscricaoDTO> campanhas = campanhaRepository.findInscricoesByUsuario(id, pageable);
+        long total = campanhaRepository.countInscricoesByUsuario(id);
 
         return new PageImpl<>(campanhas, pageable, total);
     }

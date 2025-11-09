@@ -1,8 +1,8 @@
 package br.com.limpai.projeto_limpai.repository.entity;
 
 import br.com.limpai.projeto_limpai.dto.internal.CampanhaProjection;
-import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaDTO;
 import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaMinDTO;
+import br.com.limpai.projeto_limpai.dto.response.perfil.inscricao.MinhaInscricaoDTO;
 import br.com.limpai.projeto_limpai.model.entity.Campanha;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.repository.query.Modifying;
@@ -63,6 +63,24 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
         WHERE cam.patrocinador_id = :patrocinadorId
     """)
     List<CampanhaMinDTO> findByPatrocinadorId(@Param("patrocinadorId") Long patrocinadorId, Pageable pageable);
+
+    @Query("""
+        SELECT
+            cam.campanha_id,
+            cam.nome AS nome_campanha,
+            cam.data_fim,
+            l.nome AS local_nome,
+            c.nome AS cidade_nome,
+            e.sigla AS estado_sigla,
+            uc.data_inscricao
+        FROM usuario_campanha uc
+        INNER JOIN campanha cam ON uc.campanha_id = cam.campanha_id
+        INNER JOIN local l ON cam.local_id = l.local_id
+        INNER JOIN cidade c ON l.cidade_id = c.cidade_id
+        INNER JOIN estado e ON c.estado_id = e.estado_id
+        WHERE uc.usuario_id = :usuarioId
+    """)
+    List<MinhaInscricaoDTO> findInscricoesByUsuario(@Param("usuarioId") Long usuarioId, Pageable pageable);
 
     @Query("""
         SELECT
@@ -216,4 +234,7 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
 
     @Query("SELECT COUNT(*) FROM campanha WHERE patrocinador_id = :patrocinadorId")
     long countByPatrocinadorId(@Param("patrocinadorId") Long patrocinadorId);
+
+    @Query("SELECT COUNT(*) FROM usuario_campanha WHERE usuario_id = :usuarioId")
+    long countInscricoesByUsuario(@Param("usuarioId") Long usuarioId);
 }
