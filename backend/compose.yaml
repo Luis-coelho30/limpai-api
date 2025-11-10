@@ -1,0 +1,43 @@
+services:
+  mysql-dev:
+    image: mysql:8.0
+    container_name: mysql-limpai
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=limpai_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - limpai-net
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-proot" ]
+      timeout: 20s
+      retries: 10
+      interval: 5s
+
+  backend:
+    build: .
+    container_name: limpai-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql-dev:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-dev:3306/limpai_db?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SECRET=c2VjcmV0YS1kZS10ZXN0ZS1sb2NhbC1zZW0tcHJvYmxlbWFzLWEtYmFzZTY0LWtleQ==
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - limpai-net
+
+networks:
+  limpai-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local

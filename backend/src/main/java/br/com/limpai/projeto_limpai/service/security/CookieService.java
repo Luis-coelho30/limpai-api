@@ -4,6 +4,7 @@ import br.com.limpai.projeto_limpai.exception.security.ServletResponseException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ import java.util.Optional;
 @Service
 public class CookieService {
 
+    @Value("${limpai.cookie.secure}")
+    private boolean secure;
+
     public void setRefreshToken(String refreshToken) {
 
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
@@ -27,7 +31,7 @@ public class CookieService {
         long REFRESH_TOKEN_EXPIRES_IN = 7 * 24 * 60 * 60;
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(secure)
                 .path("/auth/refresh")
                 .maxAge(REFRESH_TOKEN_EXPIRES_IN)
                 .sameSite("Strict")

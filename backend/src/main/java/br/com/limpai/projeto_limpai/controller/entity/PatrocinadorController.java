@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("patrocinador")
+@RequestMapping("/patrocinador")
 public class PatrocinadorController {
 
     private final PatrocinadorService patrocinadorService;
@@ -23,15 +23,13 @@ public class PatrocinadorController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('PATROCINADOR', 'ADMIN')")
-    public ResponseEntity<List<PatrocinadorMinDTO>> listAllVoluntarios() {
+    public ResponseEntity<List<PatrocinadorMinDTO>> listAllPatrocinadores() {
         List<PatrocinadorMinDTO> patrocinadores = patrocinadorService.listarPatrocinadores();
         return ResponseEntity.ok(patrocinadores);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('PATROCINADOR', 'ADMIN')")
-    public ResponseEntity<PatrocinadorDTO> getVoluntarioById(@PathVariable Long id) {
+    public ResponseEntity<PatrocinadorDTO> getPatrocinadorById(@PathVariable Long id) {
         PatrocinadorDTO patrocinador = patrocinadorService.getPatrocinadorById(id);
         return ResponseEntity.ok(patrocinador);
     }

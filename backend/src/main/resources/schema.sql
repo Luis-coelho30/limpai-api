@@ -3,14 +3,14 @@
 -- ===============================
 
 -- Tabela estado
-CREATE TABLE estado (
+CREATE TABLE IF NOT EXISTS estado (
     estado_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     sigla CHAR(2) UNIQUE NOT NULL
 );
 
 -- Tabela cidade
-CREATE TABLE cidade (
+CREATE TABLE IF NOT EXISTS cidade (
     cidade_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     estado_id BIGINT NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE cidade (
 );
 
 -- Tabela local
-CREATE TABLE local (
+CREATE TABLE IF NOT EXISTS local (
     local_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
     endereco VARCHAR(200) NOT NULL,
@@ -29,11 +29,11 @@ CREATE TABLE local (
 );
 
 -- Índice para otimizar consultas por cidade
-CREATE INDEX idx_local_cidade_id ON local (cidade_id);
+CREATE INDEX IF NOT EXISTS idx_local_cidade_id ON local (cidade_id);
 
 
 -- Tabela usuario
-CREATE TABLE usuario (
+CREATE TABLE IF NOT EXISTS usuario (
     usuario_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(150) NOT NULL UNIQUE,
     senha VARCHAR(64),
@@ -42,7 +42,7 @@ CREATE TABLE usuario (
 );
 
 -- Tabela voluntario
-CREATE TABLE voluntario (
+CREATE TABLE IF NOT EXISTS voluntario (
     usuario_id BIGINT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     cpf VARCHAR(14) NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE voluntario (
 );
 
 -- Tabela patrocinador
-CREATE TABLE patrocinador (
+CREATE TABLE IF NOT EXISTS patrocinador (
     usuario_id BIGINT PRIMARY KEY,
     razao_social VARCHAR(150) NOT NULL,
     nome_fantasia VARCHAR(150),
@@ -60,7 +60,7 @@ CREATE TABLE patrocinador (
 );
 
 -- Tabela campanha
-CREATE TABLE campanha (
+CREATE TABLE IF NOT EXISTS campanha (
     campanha_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     descricao TEXT,
@@ -75,7 +75,7 @@ CREATE TABLE campanha (
 );
 
 -- Tabela usuario_campanha
-CREATE TABLE usuario_campanha (
+CREATE TABLE IF NOT EXISTS usuario_campanha (
     campanha_id BIGINT NOT NULL,
     usuario_id BIGINT NOT NULL,
     data_inscricao TIMESTAMP,

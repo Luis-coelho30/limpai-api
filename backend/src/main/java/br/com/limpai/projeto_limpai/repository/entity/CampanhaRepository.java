@@ -57,7 +57,7 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
             c.nome as cidade_nome,
             e.sigla as estado_sigla
         FROM campanha cam
-        INNER JOIN "local" l ON cam.local_id = l.local_id
+        INNER JOIN local l ON cam.local_id = l.local_id
         INNER JOIN cidade c ON l.cidade_id = c.cidade_id
         INNER JOIN estado e ON c.estado_id = e.estado_id
         WHERE cam.patrocinador_id = :patrocinadorId
@@ -90,7 +90,7 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
             c.nome as cidade_nome,
             e.sigla as estado_sigla
         FROM campanha cam
-        INNER JOIN "local" l ON cam.local_id = l.local_id
+        INNER JOIN local l ON cam.local_id = l.local_id
         INNER JOIN cidade c ON l.cidade_id = c.cidade_id
         INNER JOIN estado e ON c.estado_id = e.estado_id
         WHERE cam.data_fim >= CURRENT_TIMESTAMP
@@ -105,7 +105,7 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
             c.nome as cidade_nome,
             e.sigla as estado_sigla
         FROM campanha cam
-        INNER JOIN "local" l ON cam.local_id = l.local_id
+        INNER JOIN local l ON cam.local_id = l.local_id
         INNER JOIN cidade c ON l.cidade_id = c.cidade_id
         INNER JOIN estado e ON c.estado_id = e.estado_id
         WHERE cam.data_fim < CURRENT_TIMESTAMP
@@ -120,7 +120,7 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
             c.nome as cidade_nome,
             e.sigla as estado_sigla
         FROM campanha cam
-        INNER JOIN "local" l ON cam.local_id = l.local_id
+        INNER JOIN local l ON cam.local_id = l.local_id
         INNER JOIN cidade c ON l.cidade_id = c.cidade_id
         INNER JOIN estado e ON c.estado_id = e.estado_id
         WHERE cam.data_fim >= CURRENT_TIMESTAMP
@@ -136,7 +136,7 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
             c.nome as cidade_nome,
             e.sigla as estado_sigla
         FROM campanha cam
-        INNER JOIN "local" l ON cam.local_id = l.local_id
+        INNER JOIN local l ON cam.local_id = l.local_id
         INNER JOIN cidade c ON l.cidade_id = c.cidade_id
         INNER JOIN estado e ON c.estado_id = e.estado_id
         WHERE cam.data_fim < CURRENT_TIMESTAMP
@@ -152,7 +152,7 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
             c.nome as cidade_nome,
             e.sigla as estado_sigla
         FROM campanha cam
-        INNER JOIN "local" l ON cam.local_id = l.local_id
+        INNER JOIN local l ON cam.local_id = l.local_id
         INNER JOIN cidade c ON l.cidade_id = c.cidade_id
         INNER JOIN estado e ON c.estado_id = e.estado_id
         WHERE cam.data_fim >= CURRENT_TIMESTAMP
@@ -168,7 +168,7 @@ public interface CampanhaRepository extends ListCrudRepository<Campanha, Long>, 
             c.nome as cidade_nome,
             e.sigla as estado_sigla
         FROM campanha cam
-        INNER JOIN "local" l ON cam.local_id = l.local_id
+        INNER JOIN local l ON cam.local_id = l.local_id
         INNER JOIN cidade c ON l.cidade_id = c.cidade_id
         INNER JOIN estado e ON c.estado_id = e.estado_id
         WHERE cam.data_fim < CURRENT_TIMESTAMP

@@ -17,7 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/campanha")
+@RequestMapping("/campanhas")
 public class CampanhaController {
 
     private final CampanhaService campanhaService;
@@ -97,7 +97,6 @@ public class CampanhaController {
     }
 
     @PatchMapping("/{id}/doar")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PATROCINADOR')")
     public ResponseEntity<Void> registrarDoacao(@PathVariable Long id, @RequestBody DoacaoDTO doacaoDTO) {
         campanhaService.registrarDoacao(id, doacaoDTO.valor());
 

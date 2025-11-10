@@ -22,14 +22,12 @@ public class VoluntarioController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('VOLUNTARIO', 'ADMIN')")
     public ResponseEntity<List<VoluntarioMinDTO>> listAllVoluntarios() {
         List<VoluntarioMinDTO> voluntarios = voluntarioService.listarVoluntarios();
         return ResponseEntity.ok(voluntarios);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('VOLUNTARIO', 'ADMIN')")
     public ResponseEntity<VoluntarioMinDTO> getVoluntarioById(@PathVariable Long id) {
         VoluntarioMinDTO voluntario = voluntarioService.getVoluntarioPublicoById(id);
         return ResponseEntity.ok(voluntario);

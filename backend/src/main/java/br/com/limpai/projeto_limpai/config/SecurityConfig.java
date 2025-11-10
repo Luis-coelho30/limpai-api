@@ -32,7 +32,7 @@ public class SecurityConfig {
 
     @Value("${limpai.cors.allowed-origins}")
     private String allowedOrigins;
-    private final String[] PUBLIC_ENDPOINTS = {"/auth/cadastrar/voluntario", "/auth/cadastrar/patrocinador", "/auth/login"};
+    private final String[] PUBLIC_ENDPOINTS = {"/auth/cadastrar/voluntario", "/auth/cadastrar/patrocinador", "/auth/login", "/auth/refresh"};
     private final String[] ADMIN_ENDPOINTS = {"/scalar/**", "/v3/api-docs/**"};
     private final UserDetailsService userDetailsService;
     private final JwtFilter jwtFilter;

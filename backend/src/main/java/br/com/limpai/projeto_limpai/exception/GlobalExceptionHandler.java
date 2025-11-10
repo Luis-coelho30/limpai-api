@@ -1,5 +1,6 @@
 package br.com.limpai.projeto_limpai.exception;
 
+import br.com.limpai.projeto_limpai.exception.campanha.CampanhaNaoEncontradaException;
 import br.com.limpai.projeto_limpai.exception.campanha.DataInvalidaException;
 import br.com.limpai.projeto_limpai.exception.campanha.UsuarioJaEstaInscritoException;
 import br.com.limpai.projeto_limpai.exception.campanha.UsuarioNaoEstaInscritoException;
@@ -68,6 +69,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CidadeNaoEncontradaException.class)
     public ResponseEntity<String> handleCidadeNaoEncontrada(CidadeNaoEncontradaException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND) // 404
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CampanhaNaoEncontradaException.class)
+    public ResponseEntity<String> handleCampanhaNaoEncontrada(CampanhaNaoEncontradaException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND) // 404
                 .body(ex.getMessage());
