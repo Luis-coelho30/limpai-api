@@ -25,12 +25,15 @@ services:
     depends_on:
       mysql-dev:
         condition: service_healthy
+    restart: on-failure:5
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-dev:3306/limpai_db?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - JWT_SECRET=c2VjcmV0YS1kZS10ZXN0ZS1sb2NhbC1zZW0tcHJvYmxlbWFzLWEtYmFzZTY0LWtleQ==
       - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_SQL_INIT_MODE=always
+      - SPRING_SQL_INIT_CONTINUE_ON_ERROR=true
     networks:
       - limpai-net
 
