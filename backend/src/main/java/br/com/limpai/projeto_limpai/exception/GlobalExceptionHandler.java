@@ -10,10 +10,15 @@ import br.com.limpai.projeto_limpai.exception.geography.LocalNaoEncontradoExcept
 import br.com.limpai.projeto_limpai.exception.security.JwtParsingException;
 import br.com.limpai.projeto_limpai.exception.security.ServletResponseException;
 import br.com.limpai.projeto_limpai.exception.user.*;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -100,6 +105,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED) // 401
                 .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<Map<String, String>> handleJwtException(JwtException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "Token JWT Inválido");
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED) // 401
+                .body(body);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "Usuário não encontrado");
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED) // 401
+                .body(body);
     }
 
     @ExceptionHandler(JwtParsingException.class)

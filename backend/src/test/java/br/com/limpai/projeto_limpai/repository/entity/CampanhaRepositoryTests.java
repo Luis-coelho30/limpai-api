@@ -1,7 +1,6 @@
 package br.com.limpai.projeto_limpai.repository.entity;
 
 import br.com.limpai.projeto_limpai.dto.internal.CampanhaProjection;
-import br.com.limpai.projeto_limpai.dto.response.perfil.campanha.CampanhaDTO;
 import br.com.limpai.projeto_limpai.model.entity.Campanha;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
