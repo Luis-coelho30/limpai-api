@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS local (
 );
 
 -- Índice para otimizar consultas por cidade
-CREATE INDEX IF NOT EXISTS idx_local_cidade_id ON local (cidade_id);
+CREATE INDEX idx_local_cidade_id ON local (cidade_id);
 
 
 -- Tabela usuario

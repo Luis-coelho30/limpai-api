@@ -2,28 +2,19 @@ package br.com.limpai.projeto_limpai.repository.entity;
 
 import br.com.limpai.projeto_limpai.model.entity.Usuario;
 import br.com.limpai.projeto_limpai.model.entity.Voluntario;
+import br.com.limpai.projeto_limpai.repository.AbstractIntegrationTest;
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.test.annotation.Commit;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@DataJdbcTest
-@TestPropertySource("classpath:application-test.properties")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class VoluntarioRepositoryTests {
+@SpringBootTest
+public class VoluntarioRepositoryTests extends AbstractIntegrationTest {
 
     @Autowired
     private VoluntarioRepository voluntarioRepository;
@@ -31,67 +22,114 @@ public class VoluntarioRepositoryTests {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    private final String NOME = "Luis";
+    private final String CPF = "111.111.111-11";
+    private final LocalDate DATA_NASCIMENTO = LocalDate.now();
+
+    @BeforeEach
+    public void setup() {
+        voluntarioRepository.deleteAll();
+        usuarioRepository.deleteAll();
+    }
+
     @Test
-    @Commit
-    @Order(1)
-    void salvarVoluntario() {
+    void deveSalvarNovoVoluntario() {
+        Usuario u = criarUsuarioBase();
+
+        Voluntario voluntario = criarVoluntarioBase();
+
+        voluntarioRepository
+                .insertVoluntario(
+                        u.getUsuarioId(),
+                        voluntario.getNome(),
+                        voluntario.getCpf(),
+                        voluntario.getDataNascimento()
+                );
+
+        Optional<Voluntario> voluntarioOpt = voluntarioRepository.findById(u.getUsuarioId());
+        assertTrue(voluntarioOpt.isPresent(), "O voluntário deveria ter sido encontrado no banco");
+        Voluntario voluntarioEncontrado = voluntarioOpt.get();
+
+        assertEquals(NOME, voluntarioEncontrado.getNome());
+        assertEquals(CPF, voluntarioEncontrado.getCpf());
+        assertEquals(DATA_NASCIMENTO, voluntarioEncontrado.getDataNascimento());
+    }
+
+    @Test
+    void deveEncontrarVoluntarioPorCpf() {
+        Usuario usuario = criarUsuarioBase();
+
+        Voluntario voluntario = criarVoluntarioBase();
+
+        voluntarioRepository.
+                insertVoluntario(
+                        usuario.getUsuarioId(),
+                        voluntario.getNome(),
+                        voluntario.getCpf(),
+                        voluntario.getDataNascimento()
+                );
+
+        assertTrue(voluntarioRepository.existsByCpf(voluntario.getCpf()));
+    }
+
+    @Test
+    void deveDeletarVoluntario() {
+        Usuario usuario = criarUsuarioBase();
+
+        Voluntario voluntario = criarVoluntarioBase();
+
+        voluntarioRepository.
+                insertVoluntario(
+                        usuario.getUsuarioId(),
+                        voluntario.getNome(),
+                        voluntario.getCpf(),
+                        voluntario.getDataNascimento()
+                );
+
+        Optional<Voluntario> voluntarioOpt = voluntarioRepository.findById(usuario.getUsuarioId());
+        assertTrue(voluntarioOpt.isPresent(), "O voluntário deveria ter sido encontrado no banco");
+        Voluntario voluntarioEncontrado = voluntarioOpt.get();
+
+        voluntarioRepository.delete(voluntarioEncontrado);
+    }
+
+    @Test
+    void deveDeletarVoluntarioPorId() {
+        Usuario usuario = criarUsuarioBase();
+
+        Voluntario voluntario = criarVoluntarioBase();
+
+        voluntarioRepository.
+                insertVoluntario(
+                        usuario.getUsuarioId(),
+                        voluntario.getNome(),
+                        voluntario.getCpf(),
+                        voluntario.getDataNascimento()
+                );
+
+        Optional<Voluntario> voluntarioOpt = voluntarioRepository.findById(usuario.getUsuarioId());
+        assertTrue(voluntarioOpt.isPresent(), "O voluntário deveria ter sido encontrado no banco");
+        Voluntario voluntarioEncontrado = voluntarioOpt.get();
+
+        voluntarioRepository.deleteById(voluntarioEncontrado.getUsuarioId());
+    }
+
+    private Usuario criarUsuarioBase() {
         Usuario u = new Usuario();
         u.setEmail("voluntario@teste.com");
         u.setSenha("123");
         u.setTelefone("11 99999-9999");
         u.setTipo(UsuarioEnum.VOLUNTARIO);
-        usuarioRepository.save(u);
 
-        voluntarioRepository.insertVoluntario(u.getUsuarioId(), "Luis", "111.111.111-11", LocalDate.now());
-
-        assertTrue(voluntarioRepository.findById(u.getUsuarioId()).isPresent());
+        return usuarioRepository.save(u);
     }
 
-    @Test
-    @Order(2)
-    void mostrarVoluntario() {
-        Optional<Voluntario> voluntario = voluntarioRepository.findById(1L);
-        Voluntario voluntarioSalvo;
-
-        assertTrue(voluntario.isPresent());
-
-        voluntarioSalvo = voluntario.get();
-        System.out.println(voluntarioSalvo.getUsuarioId());
-        System.out.println(voluntarioSalvo.getNome());
-        System.out.println(voluntarioSalvo.getCpf());
-        System.out.println(voluntarioSalvo.getDataNascimento());
+    private Voluntario criarVoluntarioBase() {
+        Voluntario voluntario = new Voluntario();
+        voluntario.setNome(NOME);
+        voluntario.setCpf(CPF);
+        voluntario.setDataNascimento(DATA_NASCIMENTO);
+        return voluntario;
     }
 
-    @Test
-    @Order(3)
-    void atualizarVoluntario() {
-        Optional<Voluntario> voluntario = voluntarioRepository.findById(1L);
-        Voluntario voluntarioSalvo;
-
-        if(voluntario.isPresent()) {
-            voluntarioSalvo = voluntario.get();
-            voluntarioSalvo.setNome("Pedro");
-            voluntarioRepository.save(voluntarioSalvo);
-        }
-
-        if(voluntarioRepository.findById(1L).isPresent()) {
-            assertEquals("Pedro", voluntarioRepository.findById(1L).get().getNome());
-        } else {
-            fail();
-        }
-    }
-
-    @Test
-    @Order(4)
-    void deletarVoluntario() {
-        Optional<Voluntario> voluntario = voluntarioRepository.findById(1L);
-        Voluntario voluntarioApagado;
-
-        if(voluntario.isPresent()) {
-            voluntarioApagado = voluntario.get();
-            voluntarioRepository.delete(voluntarioApagado);
-        }
-
-        assertFalse(voluntarioRepository.findById(1L).isPresent());
-    }
 }

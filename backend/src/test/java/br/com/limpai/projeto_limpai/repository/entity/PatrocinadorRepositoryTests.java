@@ -2,94 +2,132 @@ package br.com.limpai.projeto_limpai.repository.entity;
 
 import br.com.limpai.projeto_limpai.model.entity.Patrocinador;
 import br.com.limpai.projeto_limpai.model.entity.Usuario;
+import br.com.limpai.projeto_limpai.repository.AbstractIntegrationTest;
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.test.annotation.Commit;
-import org.springframework.test.context.TestPropertySource;
-
+import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJdbcTest
-@TestPropertySource("classpath:application-test.properties")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PatrocinadorRepositoryTests {
-
-    @Autowired
-    private PatrocinadorRepository patrocinadorRepository;
+@SpringBootTest
+public class PatrocinadorRepositoryTests extends AbstractIntegrationTest {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Test
-    @Commit
-    @Order(1)
-    void salvarPatrocinador() {
-        Usuario u = new Usuario();
-        u.setEmail("empresa@teste.com");
-        u.setSenha("123");
-        u.setTelefone("11 99999-9999");
-        u.setTipo(UsuarioEnum.PATROCINADOR);
-        usuarioRepository.save(u);
+    @Autowired
+    private PatrocinadorRepository patrocinadorRepository;
 
-        patrocinadorRepository.insertPatrocinador(u.getUsuarioId(), "Empresa Teste Ltda", "Empresa Teste", "12345678000199");
+    private final String NOME_FANTASIA = "Limpai LTDA";
+    private final String RAZAO_SOCIAL = "Limpai Empresa";
+    private final String CNPJ = "11111111111111";
 
-        assertTrue(patrocinadorRepository.findById(u.getUsuarioId()).isPresent());
+    @BeforeEach
+    void setup() {
+        patrocinadorRepository.deleteAll();
+        usuarioRepository.deleteAll();
     }
 
     @Test
-    @Order(2)
-    void mostrarPatrocinador() {
-        Optional<Patrocinador> patrocinador = patrocinadorRepository.findById(1L);
-        Patrocinador patrocinadorSalvo;
+    void deveSalvarNovoPatrocinador() {
+        Usuario usuario = criarUsuarioPadrao();
 
-        assertTrue(patrocinador.isPresent());
+        Patrocinador patrocinador = criarPatrocinadorPadrao();
 
-        patrocinadorSalvo = patrocinador.get();
-        System.out.println(patrocinadorSalvo.getUsuarioId());
-        System.out.println(patrocinadorSalvo.getCnpj());
-        System.out.println(patrocinadorSalvo.getNomeFantasia());
-        System.out.println(patrocinadorSalvo.getRazaoSocial());
+        patrocinadorRepository.
+                insertPatrocinador(
+                        usuario.getUsuarioId(),
+                        patrocinador.getRazaoSocial(),
+                        patrocinador.getNomeFantasia(),
+                        patrocinador.getCnpj()
+                );
+
+        Optional<Patrocinador> patrocinadorOpt = patrocinadorRepository.findById(usuario.getUsuarioId());
+        assertTrue(patrocinadorOpt.isPresent(), "O patrocinador deveria ter sido encontrado no banco");
+        Patrocinador patrocinadorEncontrado = patrocinadorOpt.get();
+
+        assertEquals(NOME_FANTASIA, patrocinadorEncontrado.getNomeFantasia());
+        assertEquals(RAZAO_SOCIAL, patrocinadorEncontrado.getRazaoSocial());
+        assertEquals(CNPJ, patrocinadorEncontrado.getCnpj());
     }
 
     @Test
-    @Order(3)
-    void atualizarPatrocinador() {
-        Optional<Patrocinador> patrocinador = patrocinadorRepository.findById(1L);
-        Patrocinador patrocinadorSalvo;
+    void deveEncontrarPatrocinadorPorCnpj() {
+        Usuario usuario = criarUsuarioPadrao();
 
-        if(patrocinador.isPresent()) {
-            patrocinadorSalvo = patrocinador.get();
-            patrocinadorSalvo.setNomeFantasia("McDonalds");
-            patrocinadorRepository.save(patrocinadorSalvo);
-        }
+        Patrocinador patrocinador = criarPatrocinadorPadrao();
 
-        if(patrocinadorRepository.findById(1L).isPresent()) {
-            assertEquals("McDonalds", patrocinadorRepository.findById(1L).get().getNomeFantasia());
-        } else {
-            fail();
-        }
+        patrocinadorRepository.
+                insertPatrocinador(
+                        usuario.getUsuarioId(),
+                        patrocinador.getRazaoSocial(),
+                        patrocinador.getNomeFantasia(),
+                        patrocinador.getCnpj()
+                );
+
+        assertTrue(patrocinadorRepository.existsByCnpj(patrocinador.getCnpj()));
     }
 
     @Test
-    @Order(4)
-    void deletarPatrocinador() {
-        Optional<Patrocinador> patrocinador = patrocinadorRepository.findById(1L);
-        Patrocinador patrocinadorApagado;
+    void deveDeletarPatrocinador() {
+        Usuario usuario = criarUsuarioPadrao();
 
-        if(patrocinador.isPresent()) {
-            patrocinadorApagado = patrocinador.get();
-            patrocinadorRepository.delete(patrocinadorApagado);
-        }
+        Patrocinador patrocinador = criarPatrocinadorPadrao();
 
-        assertFalse(patrocinadorRepository.findById(1L).isPresent());
+        patrocinadorRepository.
+                insertPatrocinador(
+                        usuario.getUsuarioId(),
+                        patrocinador.getRazaoSocial(),
+                        patrocinador.getNomeFantasia(),
+                        patrocinador.getCnpj()
+                );
+
+        Optional<Patrocinador> patrocinadorOpt = patrocinadorRepository.findById(usuario.getUsuarioId());
+        assertTrue(patrocinadorOpt.isPresent(), "O patrocinador deveria ter sido encontrado no banco");
+        Patrocinador patrocinadorEncontrado = patrocinadorOpt.get();
+
+        patrocinadorRepository.delete(patrocinadorEncontrado);
+    }
+
+    @Test
+    void deveDeletarPatrocinadorPorId() {
+        Usuario usuario = criarUsuarioPadrao();
+
+        Patrocinador patrocinador = criarPatrocinadorPadrao();
+
+        patrocinadorRepository.
+                insertPatrocinador(
+                        usuario.getUsuarioId(),
+                        patrocinador.getRazaoSocial(),
+                        patrocinador.getNomeFantasia(),
+                        patrocinador.getCnpj()
+                );
+
+        Optional<Patrocinador> patrocinadorOpt = patrocinadorRepository.findById(usuario.getUsuarioId());
+        assertTrue(patrocinadorOpt.isPresent(), "O patrocinador deveria ter sido encontrado no banco");
+        Patrocinador patrocinadorEncontrado = patrocinadorOpt.get();
+
+        patrocinadorRepository.deleteById(patrocinadorEncontrado.getUsuarioId());
+    }
+
+    private Usuario criarUsuarioPadrao() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("teste@limpai.com");
+        usuario.setSenha("123");
+        usuario.setTelefone("11 92151-1511");
+        usuario.setTipo(UsuarioEnum.VOLUNTARIO);
+
+        return usuarioRepository.save(usuario);
+    }
+
+    private Patrocinador criarPatrocinadorPadrao() {
+        Patrocinador patrocinador = new Patrocinador();
+        patrocinador.setNomeFantasia(NOME_FANTASIA);
+        patrocinador.setRazaoSocial(RAZAO_SOCIAL);
+        patrocinador.setCnpj(CNPJ);
+
+        return patrocinador;
     }
 }

@@ -2,91 +2,107 @@ package br.com.limpai.projeto_limpai.repository.entity;
 
 import br.com.limpai.projeto_limpai.model.entity.Usuario;
 import br.com.limpai.projeto_limpai.types.UsuarioEnum;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.test.annotation.Commit;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJdbcTest
-@TestPropertySource("classpath:application-test.properties")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@SpringBootTest
 public class UsuarioRepositoryTests {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    private final String EMAIL = "teste@limpai.com";
+    private final String SENHA = "123";
+    private final String TELEFONE = "11 92151-1511";
+
+    @BeforeEach
+    void setup() {
+        usuarioRepository.deleteAll();
+    }
+
     @Test
-    @Commit
-    @Order(1)
-    void salvarUsuario() {
+    void deveSalvarNovoUsuario() {
+        Usuario usuario = criarUsuarioPadrao();
+
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        assertEquals(EMAIL, usuarioSalvo.getEmail());
+        assertEquals(SENHA, usuarioSalvo.getSenha());
+        assertEquals(TELEFONE, usuarioSalvo.getTelefone());
+        assertEquals(UsuarioEnum.VOLUNTARIO, usuarioSalvo.getTipo());
+    }
+
+    @Test
+    void deveEncontrarUsuarioPorId() {
+        Usuario usuario = criarUsuarioPadrao();
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioSalvo.getUsuarioId());
+
+        assertTrue(usuarioOpt.isPresent(), "O usuário deveria ter sido encontrado no banco");
+
+        Usuario usuarioEncontrado = usuarioOpt.get();
+
+        assertEquals(EMAIL, usuarioEncontrado.getEmail());
+        assertEquals(SENHA, usuarioEncontrado.getSenha());
+        assertEquals(TELEFONE, usuarioEncontrado.getTelefone());
+        assertEquals(UsuarioEnum.VOLUNTARIO, usuarioEncontrado.getTipo());
+    }
+
+    @Test
+    void deveEncontrarUsuarioPorEmail() {
+        Usuario usuario = criarUsuarioPadrao();
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(usuarioSalvo.getEmail());
+
+        assertTrue(usuarioOpt.isPresent(), "O usuário deveria ter sido encontrado no banco");
+
+        Usuario usuarioEncontrado = usuarioOpt.get();
+
+        assertEquals(EMAIL, usuarioEncontrado.getEmail());
+        assertEquals(SENHA, usuarioEncontrado.getSenha());
+        assertEquals(TELEFONE, usuarioEncontrado.getTelefone());
+        assertEquals(UsuarioEnum.VOLUNTARIO, usuarioEncontrado.getTipo());
+    }
+
+    @Test
+    void deveRetornarTrueSeEncontrarUsuarioPorEmail() {
+        Usuario usuario = criarUsuarioPadrao();
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        assertTrue(usuarioRepository.existsByEmail(usuarioSalvo.getEmail()));
+    }
+
+    @Test
+    void deveDeletarUsuario() {
+        Usuario usuario = criarUsuarioPadrao();
+
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        usuarioRepository.delete(usuarioSalvo);
+    }
+
+    @Test
+    void deveDeletarUsuarioPorId() {
+        Usuario usuario = criarUsuarioPadrao();
+
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        usuarioRepository.deleteById(usuarioSalvo.getUsuarioId());
+    }
+
+    private Usuario criarUsuarioPadrao() {
         Usuario usuario = new Usuario();
-        usuario.setEmail("teste@limpai.com");
-        usuario.setSenha("123");
-        usuario.setTelefone("11 92151-1511");
+        usuario.setEmail(EMAIL);
+        usuario.setSenha(SENHA);
+        usuario.setTelefone(TELEFONE);
         usuario.setTipo(UsuarioEnum.VOLUNTARIO);
-
-        usuarioRepository.save(usuario);
-
-        assertTrue(usuarioRepository.findById(usuario.getUsuarioId()).isPresent());
-    }
-
-    @Test
-    @Order(2)
-    void mostrarUsuario() {
-        Optional<Usuario> usuario = usuarioRepository.findById(1L);
-        Usuario usuarioSalvo;
-
-        assertTrue(usuario.isPresent());
-
-        usuarioSalvo = usuario.get();
-        System.out.println(usuarioSalvo.getUsuarioId());
-        System.out.println(usuarioSalvo.getEmail());
-        System.out.println(usuarioSalvo.getSenha());
-        System.out.println(usuarioSalvo.getTelefone());
-        System.out.println(usuarioSalvo.getTipo());
-
-    }
-
-    @Test
-    @Order(3)
-    void atualizarUsuario() {
-        Optional<Usuario> usuario = usuarioRepository.findById(1L);
-        Usuario usuarioSalvo;
-
-        if(usuario.isPresent()) {
-            usuarioSalvo = usuario.get();
-            usuarioSalvo.setEmail("abc@limpai.com");
-            usuarioRepository.save(usuarioSalvo);
-        }
-
-        if(usuarioRepository.findById(1L).isPresent()) {
-            assertEquals("abc@limpai.com", usuarioRepository.findById(1L).get().getEmail());
-        } else {
-            fail();
-        }
-    }
-
-    @Test
-    @Order(4)
-    void deletarUsuario() {
-        Optional<Usuario> usuario = usuarioRepository.findById(1L);
-        Usuario usuarioApagado;
-
-        if(usuario.isPresent()) {
-            usuarioApagado = usuario.get();
-            usuarioRepository.delete(usuarioApagado);
-        }
-
-        assertFalse(usuarioRepository.findById(1L).isPresent());
+        return usuario;
     }
 }

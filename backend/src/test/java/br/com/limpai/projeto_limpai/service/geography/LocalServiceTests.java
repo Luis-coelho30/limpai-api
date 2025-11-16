@@ -93,7 +93,7 @@ public class LocalServiceTests {
             LocalResponseDTO resultado = localService.buscarPorId(LOCAL_ID);
 
             assertNotNull(resultado);
-            assertEquals(LOCAL_ID, resultado.id());
+            assertEquals(LOCAL_ID, resultado.localId());
             assertEquals("São Paulo", resultado.cidadeNome());
         }
 
@@ -121,7 +121,7 @@ public class LocalServiceTests {
             LocalResponseDTO resultado = localService.criarLocal(REQUEST_DTO);
 
             assertNotNull(resultado);
-            assertEquals(LOCAL_ID, resultado.id());
+            assertEquals(LOCAL_ID, resultado.localId());
             verify(localRepository).save(any(Local.class));
         }
 
