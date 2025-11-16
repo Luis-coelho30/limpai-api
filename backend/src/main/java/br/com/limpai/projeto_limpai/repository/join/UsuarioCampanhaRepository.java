@@ -104,4 +104,11 @@ public class UsuarioCampanhaRepository {
         """;
         jdbcTemplate.update(sql, campanhaId);
     }
+
+    public void deleteAll() {
+        String sql = """
+            DELETE FROM usuario_campanha
+        """;
+        jdbcTemplate.update(sql);
+    }
 }
