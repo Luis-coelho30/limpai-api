@@ -30,12 +30,8 @@ A forma mais rápida de garantir que tudo está na mesma rede e configurado é u
 2.  **Inicie o Banco de Dados e a Aplicação:**
     ```bash
     # Constrói a imagem e sobe os serviços (MySQL + Backend)
-    docker-compose up --build
+    docker-compose up -d --build
     ```
-
-### 2.2. O Segredo das Variáveis
-
-As variáveis críticas de ambiente (`JWT_SECRET`, `DB_USER/PASS`, etc.) **são injetadas pelo `docker-compose.yml`** quando a aplicação é executada via Docker, garantindo que o `SPRING_DATASOURCE_URL` aponte corretamente para o host `mysql-dev`.
 
 ---
 
@@ -46,20 +42,46 @@ Se você preferir rodar a aplicação diretamente na sua IDE (IntelliJ, Eclipse)
 1.  **Abra o Projeto na IDE:**
     * Importe o projeto Maven na sua IDE.
 
-2.  **Defina uma chave Base64 válida no arquivo application-test.properties na variável JWT_SECRET**
+2.  **Defina as variáveis de ambiente na configuração de run da sua IDE:**
+    * Exemplo IntelliJ IDEA:
+        * Clique na run atual (geralmente Current File)
+          
+          <img width="327" height="43" alt="image" src="https://github.com/user-attachments/assets/2ef212e3-65c2-4da6-b229-34634bcc2b3d" />
+        * Selecione a opção Edit Configurations
+        
+          <img width="396" height="450" alt="image" src="https://github.com/user-attachments/assets/ca3ec7ca-0163-417c-8679-8d7f31669cd2" />
+        * Clique em Add new run configuration
+          
+          <img width="801" height="656" alt="image" src="https://github.com/user-attachments/assets/7c2058bd-f650-40ba-b8f2-89eee6158821" />
+        * Selecione Application
+          
+          <img width="801" height="656" alt="image" src="https://github.com/user-attachments/assets/8cc393ff-ec1f-49d1-b7f7-16a1a28b96c2" />
+        * Dê um nome para sua configuração
+          
+          <img width="564" height="656" alt="image" src="https://github.com/user-attachments/assets/b11425f1-189f-4e6a-b7b6-08feb2c66a96" />
+        * Configure a classe main do projeto: `ProjetoLimpaiApplication.java` (Basta digitar e selecionar a primeira opção)
 
-2.  **Inicie o Backend (Método principal):**
-    * Abra a classe principal (`ProjetoLimpaiApplication.java`).
-    * Clique com o botão direito e selecione **Run** ou **Debug**.
+          <img width="564" height="656" alt="image" src="https://github.com/user-attachments/assets/e2a60d3f-f801-4288-abb2-258f60c192ab" />
+        * Cole o seguinte texto em Enviromental Variables:
+          ```bash
+            JWT_SECRET=DuTQJODkoQQBTroTMQGmx//IRMXPCa8juq7qmY/DxP4=;SPRING_PROFILES_ACTIVE=test
+          ```
+          <img width="564" height="656" alt="image" src="https://github.com/user-attachments/assets/390482b2-2900-4c29-855e-b805404e70ee" />
+        * Clique em Apply e Ok
+
+3.  **Inicie o Backend:**
+    * Inicie o projeto com o botão da IDE e a Run customizada selecionada.
 
 ---
 
 ## 🧪 4. Testando a Autenticação
 
+**Certifique-se que você tenha o Postman baixado e pronto com um workspace vazio**
+
+* **Importe as collections:** `Clique no botão Import e selecione a pasta postman-limpai`
+* **Selecione o environment do pacote importado:** `Clique em "No environment", selecione "limpai-api-env"`
+* **Configure a variável de ambiente base_url:** `Clique em "Environments" e defina o valor da variável para URL Base`
 * **URL Base:** `http://localhost:8080`
-* **Login:** `POST /auth/login` (Obtém `accessToken` no corpo e `refreshToken` no cookie `HttpOnly`).
-* **Uso:** Envie o `accessToken` como header: `Authorization: Bearer <token_aqui>`
-* **Renovação:** `POST /auth/refresh` (Envia o cookie automaticamente).
 
 ---
 
