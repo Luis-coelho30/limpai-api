@@ -1,6 +1,6 @@
-# 🍋 Projeto Limpaí - Backend (Microsserviço de Autenticação e Campanhas)
+# Projeto Limpaí - Backend 
 
-Este projeto é a API REST principal do sistema Limpaí, responsável por gerenciar a autenticação de usuários (JWT + Cookies) e o ciclo de vida das Campanhas, Voluntários e Patrocinadores.
+Este projeto é a API REST principal do projeto Limpaí 
 
 ---
 
@@ -46,7 +46,7 @@ Se você preferir rodar a aplicação diretamente na sua IDE (IntelliJ, Eclipse)
 1.  **Abra o Projeto na IDE:**
     * Importe o projeto Maven na sua IDE.
 
-2.  **Defina uma chave Base64 válida no arquivo application-test.properties:**
+2.  **Defina uma chave Base64 válida no arquivo application-test.properties na variável JWT_SECRET**
 
 2.  **Inicie o Backend (Método principal):**
     * Abra a classe principal (`ProjetoLimpaiApplication.java`).
