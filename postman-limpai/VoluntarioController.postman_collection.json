@@ -1,0 +1,219 @@
+{
+	"info": {
+		"_postman_id": "ddeb5ef1-7e6e-42eb-9e9e-e7deeb314e5c",
+		"name": "VoluntarioController",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42442273"
+	},
+	"item": [
+		{
+			"name": "listarTodosVoluntarios",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/voluntario",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"voluntario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listarVoluntarioById",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/voluntario/2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"voluntario",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "verPerfilPrivado",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/voluntario/personal/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"voluntario",
+						"personal",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "verMeuPerfil",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/voluntario/me",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"voluntario",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "atualizarMeuPerfil",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Jorge\",\n    \"telefone\": \"11 22222-3333\"\n    //\"cpf\": \"11111111111\",\n    //\"dataNascimento\": \"12/10/2022\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/voluntario/me",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"voluntario",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "excluirConta",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/voluntario/me",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"voluntario",
+						"me"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

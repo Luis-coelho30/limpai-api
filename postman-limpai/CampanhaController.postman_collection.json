@@ -1,0 +1,357 @@
+{
+	"info": {
+		"_postman_id": "c11aeb86-d8be-4d4e-b910-a2df2830af3a",
+		"name": "CampanhaController",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42442273"
+	},
+	"item": [
+		{
+			"name": "listarTodas",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/campanhas?page=0&size=10",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanhas"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "sort",
+							"value": "nome,asc",
+							"disabled": true
+						},
+						{
+							"key": "historico",
+							"value": "false",
+							"disabled": true
+						},
+						{
+							"key": "cidadeId",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "estadoId",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listarMinhasCampanhas",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_patrocinador}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/campanhas/me?page=0&size=10",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanhas",
+						"me"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "sort",
+							"value": "nome,asc",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "buscarPorId",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/campanhas/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanhas",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "criarCampanha",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_patrocinador}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Limpeza da Praia Grande\",\n    \"descricao\": \"Vamos limpar a costa da praia!\",\n    \"dataInicio\": \"2025-11-09T22:35:00\",\n    \"dataFim\": \"2025-11-12T22:35:00\",\n    \"metaFundos\": 20000,\n    \"localId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/campanhas",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanhas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "atualizarCampanha",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_patrocinador}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Limpeza da Praia Grande\",\n    \"descricao\": \"Vamos limpar a costa da praia!\",\n    \"dataInicio\": \"2025-11-09T22:35:00\",\n    \"dataFim\": \"2025-11-12T22:35:00\",\n    \"metaFundos\": 20000,\n    \"localId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/campanhas/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanhas",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "encerrarCampanha",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_patrocinador}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/campanhas/1/encerrar",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanhas",
+						"1",
+						"encerrar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "estenderPrazo",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_patrocinador}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"novaDataFim\": \"2025-11-30T22:35:00\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/campanhas/1/estender",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanhas",
+						"1",
+						"estender"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registrarDoacao",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_patrocinador}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"valor\": 20000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/campanhas/1/doar",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanhas",
+						"1",
+						"doar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "excluirCamoanha",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_patrocinador}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/campanhas/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanhas",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,121 @@
+{
+	"info": {
+		"_postman_id": "e10190ea-d035-4002-8e00-cc968b0d8780",
+		"name": "InscricaoController",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42442273"
+	},
+	"item": [
+		{
+			"name": "listarMinhasCampanhas",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/campanha/inscricoes/me?page=0&size=10",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanha",
+						"inscricoes",
+						"me"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "sort",
+							"value": "nome,asc",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "inscrever",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"valor\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/campanha/1/inscricao",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanha",
+						"1",
+						"inscricao"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "desinscrever",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/campanha/1/inscricao",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"campanha",
+						"1",
+						"inscricao"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

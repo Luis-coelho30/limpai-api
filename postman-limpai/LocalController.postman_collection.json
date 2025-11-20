@@ -1,0 +1,158 @@
+{
+	"info": {
+		"_postman_id": "301bb877-ff00-428d-98df-2b3d784f3d53",
+		"name": "LocalController",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42442273"
+	},
+	"item": [
+		{
+			"name": "listarLocais",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/local?page=0&size=10",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"local"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "sort",
+							"value": "nome,asc",
+							"disabled": true
+						},
+						{
+							"key": "cidadeId",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listarLocalById",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_voluntario}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/local/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"local",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "criarLocal",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_patrocinador}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Praia de corais\",\n    \"endereco\": \"Rua X, 1234\",\n    \"cep\": \"00000000\",\n    \"cidadeId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/local",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"local"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "atualizarLocal",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_patrocinador}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Praia de corais\",\n    \"endereco\": \"Rua X, 1234\",\n    \"cep\": \"00000000\",\n    \"cidadeId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/local/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"local",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
